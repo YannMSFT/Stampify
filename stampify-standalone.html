@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stampify - Ajoutez un filigrane à vos PDF</title>
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <style>
+        /* Reset et styles de base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --secondary-color: #64748b;
+            --success-color: #10b981;
+            --error-color: #ef4444;
+            --background: #f8fafc;
+            --surface: #ffffff;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--background);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .logo {
+            width: 120px;
+            height: auto;
+            margin-bottom: 1rem;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+        }
+
+        .badge {
+            display: inline-block;
+            background: var(--primary-color);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+        /* Upload Section */
+        .upload-section {
+            margin-bottom: 2rem;
+        }
+
+        .upload-area {
+            background: var(--surface);
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 3rem 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary-color);
+            background: #f1f5f9;
+        }
+
+        .upload-area.drag-over {
+            border-color: var(--primary-color);
+            background: #eff6ff;
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .upload-text {
+            font-size: 1.2rem;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-text-small {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .upload-info {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 1rem;
+        }
+
+        /* Configuration Section */
+        .config-section {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .config-section h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .form-group input[type="text"],
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input[type="text"]:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .form-group input[type="range"] {
+            width: calc(100% - 60px);
+            height: 6px;
+            border-radius: 3px;
+            background: var(--border-color);
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .form-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        .form-group input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+            border: none;
+        }
+
+        .range-value {
+            display: inline-block;
+            min-width: 50px;
+            text-align: right;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-left: 10px;
+        }
+
+        .color-picker-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .color-picker-wrapper input[type="color"] {
+            width: 60px;
+            height: 40px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .color-picker-wrapper span {
+            font-family: monospace;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-weight: 400;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 0.5rem;
+            cursor: pointer;
+        }
+
+        /* Preview Section */
+        .preview-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .preview-section h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .preview-box {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .watermark-preview {
+            font-weight: bold;
+            user-select: none;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-primary:disabled {
+            background: var(--secondary-color);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .btn-secondary {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #475569;
+            transform: translateY(-2px);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .button-group button {
+            flex: 1;
+        }
+
+        /* Progress Section */
+        .progress-section {
+            text-align: center;
+            padding: 3rem 2rem;
+            background: var(--surface);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .spinner {
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .progress-text {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+        }
+
+        /* Result Section */
+        .result-section {
+            text-align: center;
+            padding: 3rem 2rem;
+            background: var(--surface);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .result-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .result-section h2 {
+            font-size: 1.8rem;
+            color: var(--success-color);
+            margin-bottom: 1rem;
+        }
+
+        .result-info {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        /* Error Section */
+        .error-section {
+            text-align: center;
+            padding: 3rem 2rem;
+            background: var(--surface);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .error-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .error-section h2 {
+            font-size: 1.8rem;
+            color: var(--error-color);
+            margin-bottom: 1rem;
+        }
+
+        .error-message {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .container {
+                padding: 1rem;
+            }
+
+            header h1 {
+                font-size: 2rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .upload-area {
+                padding: 2rem 1rem;
+            }
+
+            .config-section {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <img src="https://raw.githubusercontent.com/YannMSFT/Static-content/refs/heads/main/stampify.png" alt="Stampify Logo" class="logo">
+            <h1>Stampify</h1>
+            <p class="subtitle">Ajoutez facilement un filigrane à vos documents PDF</p>
+            <span class="badge">100% Client-Side - Aucune donnée n'est envoyée au serveur</span>
+        </header>
+
+        <main>
+            <div class="upload-section" id="uploadSection">
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">📁</div>
+                    <p class="upload-text">Glissez-déposez votre PDF ici</p>
+                    <p class="upload-text-small">ou</p>
+                    <label for="fileInput" class="btn btn-primary">Sélectionner un fichier</label>
+                    <input type="file" id="fileInput" accept=".pdf" hidden>
+                    <p class="upload-info">Maximum: 50MB et 500 pages</p>
+                </div>
+            </div>
+
+            <div class="config-section hidden" id="configSection">
+                <h2>Configuration du filigrane</h2>
+                
+                <form id="watermarkForm">
+                    <div class="form-group checkbox-group">
+                        <label>
+                            <input type="checkbox" id="useTemplate" name="useTemplate">
+                            Utiliser le modèle : "Document exclusivement destiné à l'usage de..."
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="watermarkText">Texte du filigrane *</label>
+                        <input type="text" id="watermarkText" name="text" required 
+                               placeholder="Ex: CONFIDENTIEL" maxlength="150" value="CONFIDENTIEL">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="fontSize">Taille de police</label>
+                            <input type="range" id="fontSize" name="fontSize" 
+                                   min="10" max="100" value="30" step="5">
+                            <span class="range-value" id="fontSizeValue">30</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="rotation">Rotation (degrés)</label>
+                            <input type="range" id="rotation" name="rotation" 
+                                   min="-180" max="180" value="45" step="5">
+                            <span class="range-value" id="rotationValue">45°</span>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="opacity">Opacité</label>
+                            <input type="range" id="opacity" name="opacity" 
+                                   min="10" max="100" value="30" step="5">
+                            <span class="range-value" id="opacityValue">30%</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="color">Couleur</label>
+                            <div class="color-picker-wrapper">
+                                <input type="color" id="color" name="color" value="#000000">
+                                <span id="colorValue">#000000</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group checkbox-group">
+                        <label>
+                            <input type="checkbox" id="repeat" name="repeat">
+                            Répéter le filigrane sur toute la page
+                        </label>
+                    </div>
+
+                    <div class="preview-section">
+                        <h3>Aperçu</h3>
+                        <div class="preview-box" id="previewBox">
+                            <div class="watermark-preview" id="watermarkPreview">CONFIDENTIEL</div>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button type="button" class="btn btn-secondary" id="cancelBtn">Annuler</button>
+                        <button type="submit" class="btn btn-primary" id="submitBtn">
+                            Appliquer le filigrane
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="progress-section hidden" id="progressSection">
+                <div class="spinner"></div>
+                <p class="progress-text">Traitement en cours...</p>
+            </div>
+
+            <div class="result-section hidden" id="resultSection">
+                <div class="result-icon">✅</div>
+                <h2>Filigrane ajouté avec succès !</h2>
+                <p class="result-info" id="resultInfo"></p>
+                <div class="button-group">
+                    <button class="btn btn-primary" id="downloadBtn">
+                        📥 Télécharger le PDF
+                    </button>
+                    <button class="btn btn-secondary" id="newFileBtn">
+                        Traiter un nouveau fichier
+                    </button>
+                </div>
+            </div>
+
+            <div class="error-section hidden" id="errorSection">
+                <div class="error-icon">❌</div>
+                <h2>Erreur</h2>
+                <p class="error-message" id="errorMessage"></p>
+                <button class="btn btn-secondary" id="retryBtn">Réessayer</button>
+            </div>
+        </main>
+
+        <footer>
+            <p>Stampify - Traitement 100% local dans votre navigateur 🔒</p>
+        </footer>
+    </div>
+
+    <script>
+        // Attendre que le DOM et pdf-lib soient chargés
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('DOM chargé');
+            
+            // Vérifier que PDFLib est disponible
+            if (typeof PDFLib === 'undefined') {
+                console.error('PDFLib n\'est pas chargé !');
+                alert('Erreur: La bibliothèque PDF-lib n\'a pas pu être chargée. Vérifiez votre connexion internet.');
+                return;
+            }
+            
+            console.log('PDFLib disponible:', PDFLib);
+            const { PDFDocument, rgb, degrees } = PDFLib;
+
+            // État de l'application
+            let selectedFile = null;
+            let pdfBytes = null;
+            let processedPdfBytes = null;
+
+            // Éléments du DOM
+            const uploadSection = document.getElementById('uploadSection');
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.getElementById('fileInput');
+            const configSection = document.getElementById('configSection');
+            const progressSection = document.getElementById('progressSection');
+            const resultSection = document.getElementById('resultSection');
+            const errorSection = document.getElementById('errorSection');
+            const watermarkForm = document.getElementById('watermarkForm');
+
+            // Inputs du formulaire
+            const useTemplate = document.getElementById('useTemplate');
+            const watermarkText = document.getElementById('watermarkText');
+            const fontSize = document.getElementById('fontSize');
+            const rotation = document.getElementById('rotation');
+            const opacity = document.getElementById('opacity');
+            const color = document.getElementById('color');
+            const repeat = document.getElementById('repeat');
+
+            // Valeurs affichées
+            const fontSizeValue = document.getElementById('fontSizeValue');
+            const rotationValue = document.getElementById('rotationValue');
+            const opacityValue = document.getElementById('opacityValue');
+            const colorValue = document.getElementById('colorValue');
+
+            // Aperçu
+            const watermarkPreview = document.getElementById('watermarkPreview');
+
+            // Boutons
+            const cancelBtn = document.getElementById('cancelBtn');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const newFileBtn = document.getElementById('newFileBtn');
+            const retryBtn = document.getElementById('retryBtn');
+
+            // Gestion du drag & drop
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('drag-over');
+            });
+
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('drag-over');
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('drag-over');
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleFile(files[0]);
+                }
+            });
+
+            // Gestion du clic sur la zone d'upload (sauf sur le bouton)
+            uploadArea.addEventListener('click', (e) => {
+                // Ne pas déclencher si on clique sur le label/bouton
+                if (e.target.tagName !== 'LABEL' && e.target.tagName !== 'INPUT') {
+                    fileInput.click();
+                }
+            });
+
+            // Gestion de la sélection de fichier
+            fileInput.addEventListener('change', (e) => {
+                console.log('Fichier sélectionné:', e.target.files);
+                if (e.target.files.length > 0) {
+                    handleFile(e.target.files[0]);
+                }
+            });
+
+            // Fonction pour gérer le fichier sélectionné
+            async function handleFile(file) {
+                console.log('handleFile appelé avec:', file.name, file.type, file.size);
+                
+                // Vérifier l'extension du fichier (plus fiable que le MIME type)
+                const fileName = file.name.toLowerCase();
+                if (!fileName.endsWith('.pdf')) {
+                    showError('Veuillez sélectionner un fichier PDF valide.');
+                    return;
+                }
+
+                // Vérifier la taille du fichier
+                const maxSize = 50 * 1024 * 1024; // 50MB
+                if (file.size > maxSize) {
+                    showError(`Le fichier est trop volumineux (${(file.size / (1024*1024)).toFixed(1)}MB). Maximum: 50MB`);
+                    return;
+                }
+
+                selectedFile = file;
+                console.log('Fichier accepté, lecture en cours...');
+
+                // Lire le fichier PDF
+                try {
+                    console.log('Lecture du fichier en ArrayBuffer...');
+                    const arrayBuffer = await file.arrayBuffer();
+                    pdfBytes = new Uint8Array(arrayBuffer);
+                    console.log('ArrayBuffer lu, taille:', pdfBytes.length);
+
+                    // Charger le PDF pour vérifier le nombre de pages
+                    console.log('Chargement du PDF avec PDFDocument...');
+                    const pdfDoc = await PDFDocument.load(pdfBytes);
+                    const numPages = pdfDoc.getPageCount();
+                    console.log('PDF chargé avec succès,', numPages, 'pages');
+
+                    if (numPages > 500) {
+                        showError(`Le PDF contient trop de pages (${numPages}). Maximum: 500`);
+                        return;
+                    }
+
+                    console.log('Affichage de la section de configuration');
+                    showConfigSection();
+                } catch (error) {
+                    console.error('Erreur lors de la lecture du PDF:', error);
+                    showError('Erreur lors de la lecture du fichier PDF: ' + error.message);
+                }
+            }
+
+            // Afficher la section de configuration
+            function showConfigSection() {
+                uploadSection.classList.add('hidden');
+                configSection.classList.remove('hidden');
+                progressSection.classList.add('hidden');
+                resultSection.classList.add('hidden');
+                errorSection.classList.add('hidden');
+            }
+
+            // Gestion du modèle de texte
+            useTemplate.addEventListener('change', (e) => {
+                if (e.target.checked) {
+                    const name = prompt('Entrez le nom du destinataire:', '');
+                    if (name && name.trim()) {
+                        watermarkText.value = `Document exclusivement destiné à l'usage de ${name.trim()}`;
+                        // Augmenter la limite de caractères si nécessaire
+                        watermarkText.maxLength = 200;
+                    } else {
+                        e.target.checked = false;
+                    }
+                } else {
+                    watermarkText.value = 'CONFIDENTIEL';
+                    watermarkText.maxLength = 150;
+                }
+                updatePreview();
+            });
+
+            // Mise à jour des valeurs affichées et de l'aperçu
+            fontSize.addEventListener('input', (e) => {
+                fontSizeValue.textContent = e.target.value;
+                updatePreview();
+            });
+
+            rotation.addEventListener('input', (e) => {
+                rotationValue.textContent = e.target.value + '°';
+                updatePreview();
+            });
+
+            opacity.addEventListener('input', (e) => {
+                opacityValue.textContent = e.target.value + '%';
+                updatePreview();
+            });
+
+            color.addEventListener('input', (e) => {
+                colorValue.textContent = e.target.value;
+                updatePreview();
+            });
+
+            watermarkText.addEventListener('input', updatePreview);
+            repeat.addEventListener('change', updatePreview);
+
+            // Mise à jour de l'aperçu du filigrane
+            function updatePreview() {
+                const text = watermarkText.value || 'CONFIDENTIEL';
+                const size = fontSize.value;
+                const rot = rotation.value;
+                const op = opacity.value;
+                const col = color.value;
+                const rep = repeat.checked;
+                
+                watermarkPreview.textContent = text;
+                watermarkPreview.style.fontSize = size + 'px';
+                // Inverser la rotation pour correspondre au rendu PDF
+                watermarkPreview.style.transform = `rotate(${-rot}deg)`;
+                watermarkPreview.style.opacity = op / 100;
+                watermarkPreview.style.color = col;
+                
+                // Gérer la répétition dans l'aperçu
+                const previewBox = document.getElementById('previewBox');
+                if (rep) {
+                    previewBox.style.background = `repeating-linear-gradient(45deg, transparent, transparent 100px, rgba(0,0,0,0.02) 100px, rgba(0,0,0,0.02) 200px)`;
+                } else {
+                    previewBox.style.background = '#f8fafc';
+                }
+            }
+
+            // Bouton Annuler
+            cancelBtn.addEventListener('click', () => {
+                resetForm();
+                uploadSection.classList.remove('hidden');
+                configSection.classList.add('hidden');
+                selectedFile = null;
+                pdfBytes = null;
+                fileInput.value = '';
+            });
+
+            // Soumission du formulaire
+            watermarkForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                if (!pdfBytes) {
+                    showError('Aucun fichier sélectionné.');
+                    return;
+                }
+                
+                // Afficher la section de progression
+                configSection.classList.add('hidden');
+                progressSection.classList.remove('hidden');
+                
+                try {
+                    // Traiter le PDF
+                    await processPDF();
+                    
+                } catch (error) {
+                    showError('Erreur lors du traitement: ' + error.message);
+                }
+            });
+
+            // Fonction pour traiter le PDF et ajouter le filigrane
+            async function processPDF() {
+                try {
+                    // Charger le PDF
+                    const pdfDoc = await PDFDocument.load(pdfBytes);
+                    const pages = pdfDoc.getPages();
+                    const numPages = pages.length;
+
+                    // Récupérer les paramètres du filigrane
+                    const text = watermarkText.value;
+                    const fontSizeVal = parseInt(fontSize.value);
+                    const rotationVal = parseInt(rotation.value);
+                    const opacityVal = parseInt(opacity.value) / 100;
+                    const colorVal = hexToRgb(color.value);
+                    const repeatVal = repeat.checked;
+
+                    // Embed font
+                    const font = await pdfDoc.embedFont('Helvetica-Bold');
+
+                    // Traiter chaque page
+                    for (const page of pages) {
+                        const { width, height } = page.getSize();
+                        
+                        if (repeatVal) {
+                            // Répéter le filigrane avec plus d'espacement
+                            const spacingX = width / 2;
+                            const spacingY = height / 2;
+                            
+                            for (let i = -1; i <= 2; i++) {
+                                for (let j = -1; j <= 2; j++) {
+                                    const x = i * spacingX;
+                                    const y = j * spacingY;
+                                    
+                                    page.drawText(text, {
+                                        x: x,
+                                        y: y,
+                                        size: fontSizeVal,
+                                        font: font,
+                                        color: rgb(colorVal.r, colorVal.g, colorVal.b),
+                                        opacity: opacityVal,
+                                        rotate: degrees(rotationVal)
+                                    });
+                                }
+                            }
+                        } else {
+                            // Filigrane unique au centre
+                            const textWidth = font.widthOfTextAtSize(text, fontSizeVal);
+                            const textHeight = fontSizeVal;
+                            
+                            // Centre de la page
+                            const centerX = width / 2;
+                            const centerY = height / 2;
+                            
+                            // Calculer l'offset pour centrer le texte
+                            // En tenant compte de la rotation
+                            const radians = (rotationVal * Math.PI) / 180;
+                            const offsetX = (textWidth / 2) * Math.cos(radians);
+                            const offsetY = (textWidth / 2) * Math.sin(radians);
+                            
+                            page.drawText(text, {
+                                x: centerX - offsetX,
+                                y: centerY - offsetY,
+                                size: fontSizeVal,
+                                font: font,
+                                color: rgb(colorVal.r, colorVal.g, colorVal.b),
+                                opacity: opacityVal,
+                                rotate: degrees(rotationVal)
+                            });
+                        }
+                    }
+
+                    // Sauvegarder le PDF modifié
+                    processedPdfBytes = await pdfDoc.save();
+                    
+                    showResult(numPages);
+                    
+                } catch (error) {
+                    throw new Error('Impossible de traiter le PDF: ' + error.message);
+                }
+            }
+
+            // Convertir hex en RGB
+            function hexToRgb(hex) {
+                const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+                return result ? {
+                    r: parseInt(result[1], 16) / 255,
+                    g: parseInt(result[2], 16) / 255,
+                    b: parseInt(result[3], 16) / 255
+                } : { r: 0, g: 0, b: 0 };
+            }
+
+            // Afficher le résultat
+            function showResult(pages) {
+                progressSection.classList.add('hidden');
+                resultSection.classList.remove('hidden');
+                
+                const resultInfo = document.getElementById('resultInfo');
+                resultInfo.textContent = `Le filigrane a été appliqué sur ${pages} page${pages > 1 ? 's' : ''}.`;
+            }
+
+            // Afficher une erreur
+            function showError(message) {
+                uploadSection.classList.add('hidden');
+                configSection.classList.add('hidden');
+                progressSection.classList.add('hidden');
+                resultSection.classList.add('hidden');
+                errorSection.classList.remove('hidden');
+                
+                const errorMessage = document.getElementById('errorMessage');
+                errorMessage.textContent = message;
+            }
+
+            // Bouton Télécharger
+            downloadBtn.addEventListener('click', () => {
+                if (processedPdfBytes) {
+                    // Créer un blob et télécharger
+                    const blob = new Blob([processedPdfBytes], { type: 'application/pdf' });
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = 'watermarked_' + (selectedFile ? selectedFile.name : 'document.pdf');
+                    link.click();
+                    URL.revokeObjectURL(url);
+                    
+                    // Après un court délai, proposer un nouveau fichier
+                    setTimeout(() => {
+                        resetForm();
+                        uploadSection.classList.remove('hidden');
+                        resultSection.classList.add('hidden');
+                        selectedFile = null;
+                        pdfBytes = null;
+                        processedPdfBytes = null;
+                        fileInput.value = '';
+                    }, 1000);
+                }
+            });
+
+            // Bouton Nouveau fichier
+            newFileBtn.addEventListener('click', () => {
+                resetForm();
+                uploadSection.classList.remove('hidden');
+                resultSection.classList.add('hidden');
+                selectedFile = null;
+                pdfBytes = null;
+                processedPdfBytes = null;
+                fileInput.value = '';
+            });
+
+            // Bouton Réessayer
+            retryBtn.addEventListener('click', () => {
+                if (selectedFile && pdfBytes) {
+                    showConfigSection();
+                } else {
+                    uploadSection.classList.remove('hidden');
+                    errorSection.classList.add('hidden');
+                }
+            });
+
+            // Réinitialiser le formulaire
+            function resetForm() {
+                useTemplate.checked = false;
+                watermarkText.value = 'CONFIDENTIEL';
+                watermarkText.maxLength = 150;
+                fontSize.value = 30;
+                rotation.value = 45;
+                opacity.value = 30;
+                color.value = '#000000';
+                repeat.checked = false;
+                
+                fontSizeValue.textContent = '30';
+                rotationValue.textContent = '45°';
+                opacityValue.textContent = '30%';
+                colorValue.textContent = '#000000';
+                
+                updatePreview();
+            }
+
+            // Initialisation
+            updatePreview();
+        });
+    </script>
+</body>
+</html>
