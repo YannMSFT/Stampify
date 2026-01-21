@@ -156,6 +156,7 @@ En tant qu'utilisateur, je veux être informé clairement si mon fichier dépass
 - **NFR-004**: Le traitement d'un PDF de 100 pages DOIT prendre moins de 30 secondes
 - **NFR-005**: L'application DOIT fonctionner sur Chrome 90+, Firefox 88+, Safari 14+, Edge 90+
 - **NFR-006**: L'application DOIT inclure le script Cloudflare Web Analytics dans le body HTML
+- **NFR-007**: L'application DOIT être optimisée pour le référencement (SEO) avec balises meta, Open Graph, Schema.org et sitemap
 
 ### Key Entities
 

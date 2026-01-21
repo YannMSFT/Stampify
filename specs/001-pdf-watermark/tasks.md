@@ -200,6 +200,16 @@
 - [x] T073 Update all error messages to use i18n.t() in estampify-standalone.html `<script>`
 - [x] T074 Update template text generation to use i18n in estampify-standalone.html `<script>`
 - [x] T075 Add Cloudflare Web Analytics script before closing body tag (NFR-006) in estampify-standalone.html `<body>`
+
+### SEO Optimization - NFR-007
+
+- [x] T076 Add SEO meta tags (description, keywords, robots, canonical) in estampify-standalone.html `<head>`
+- [x] T077 Add Open Graph meta tags for social sharing in estampify-standalone.html `<head>`
+- [x] T078 Add Twitter Card meta tags in estampify-standalone.html `<head>`
+- [x] T079 Add Schema.org JSON-LD structured data in estampify-standalone.html `<head>`
+- [x] T080 Create sitemap.xml with language alternates in sitemap.xml
+- [x] T081 Create robots.txt with sitemap reference in robots.txt
+
 ### Validation Tests
 
 - [x] T065 Test offline mode (disconnect network after load) in browser
@@ -301,7 +311,7 @@ T022-T034: Config panel, sliders, WatermarkConfig
 
 | Metric | Value |
 |--------|-------|
-| **Total Tasks** | 83 |
+| **Total Tasks** | 89 |
 | **Phase 1 (Setup)** | 4 tasks |
 | **Phase 2 (Foundational)** | 6 tasks |
 | **Phase 3 (US1 - Upload)** | 12 tasks |
@@ -309,7 +319,7 @@ T022-T034: Config panel, sliders, WatermarkConfig
 | **Phase 5 (US4 - Generate)** | 17 tasks |
 | **Phase 6 (US3 - Template)** | 6 tasks |
 | **Phase 7 (US5 - Errors)** | 8 tasks |
-| **Phase 8 (Polish + i18n)** | 16 tasks |
+| **Phase 8 (Polish + i18n + SEO)** | 22 tasks |
 | **MVP Tasks (Phases 1-5)** | 51 tasks |
 | **Parallel Opportunities** | US1 ∥ US2, US3 ∥ US5 |
 

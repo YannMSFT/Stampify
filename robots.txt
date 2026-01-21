@@ -1,0 +1,11 @@
+# Estampify - robots.txt
+# https://yannmsft.github.io/Estampify/
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://yannmsft.github.io/Estampify/sitemap.xml
+
+# Crawl-delay (optional, be nice to crawlers)
+Crawl-delay: 1
