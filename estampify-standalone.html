@@ -3,736 +3,879 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Estampify - Application de filigrane PDF 100% locale">
+    
+    <!-- SEO Meta Tags (NFR-007) -->
+    <meta name="description" content="Estampify - Free online PDF watermark tool. Add custom watermarks to your PDFs 100% locally. Your documents never leave your computer. No upload, no server, complete privacy.">
+    <meta name="keywords" content="PDF watermark, filigrane PDF, marca de agua PDF, watermark tool, PDF editor, free PDF tool, online watermark, document protection, privacy, local processing">
     <meta name="author" content="YannMSFT">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="en, fr, es">
+    <meta name="revisit-after" content="7 days">
+    <link rel="canonical" href="https://yannmsft.github.io/Estampify/">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://yannmsft.github.io/Estampify/">
+    <meta property="og:title" content="Estampify - Free PDF Watermark Tool">
+    <meta property="og:description" content="Add custom watermarks to your PDFs 100% locally. Your documents never leave your computer. Free, fast, and private.">
+    <meta property="og:image" content="https://yannmsft.github.io/Estampify/logo.png">
+    <meta property="og:image:alt" content="Estampify Logo">
+    <meta property="og:site_name" content="Estampify">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:locale:alternate" content="fr_FR">
+    <meta property="og:locale:alternate" content="es_ES">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://yannmsft.github.io/Estampify/">
+    <meta name="twitter:title" content="Estampify - Free PDF Watermark Tool">
+    <meta name="twitter:description" content="Add custom watermarks to your PDFs 100% locally. Your documents never leave your computer.">
+    <meta name="twitter:image" content="https://yannmsft.github.io/Estampify/logo.png">
+    
+    <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+    <link rel="apple-touch-icon" href="logo.png">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        pastel: {
+                            pink: '#ffd6e0',
+                            peach: '#ffdfcc',
+                            yellow: '#fff4cc',
+                            mint: '#d4f5d4',
+                            sky: '#d4edfc',
+                            lavender: '#e8d4fc',
+                            rose: '#fce4ec',
+                            coral: '#ffccbc',
+                        },
+                        brand: {
+                            50: '#fef7f0',
+                            100: '#fdeee0',
+                            200: '#fad9c1',
+                            300: '#f6bc97',
+                            400: '#f0956b',
+                            500: '#ea7648',
+                            600: '#dc5c3d',
+                            700: '#b74633',
+                            800: '#923a2f',
+                            900: '#763329',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'float-delayed': 'float 6s ease-in-out infinite 2s',
+                        'float-slow': 'float 8s ease-in-out infinite',
+                        'pulse-soft': 'pulse-soft 3s ease-in-out infinite',
+                        'gradient': 'gradient 8s ease infinite',
+                        'slide-up': 'slideUp 0.6s ease-out',
+                        'slide-in-left': 'slideInLeft 0.5s ease-out',
+                        'slide-in-right': 'slideInRight 0.5s ease-out',
+                        'fade-in': 'fadeIn 0.5s ease-out',
+                        'bounce-soft': 'bounceSoft 2s ease-in-out infinite',
+                        'shimmer': 'shimmer 2s linear infinite',
+                        'morph': 'morph 8s ease-in-out infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        'pulse-soft': {
+                            '0%, 100%': { opacity: '1' },
+                            '50%': { opacity: '0.7' },
+                        },
+                        gradient: {
+                            '0%, 100%': { backgroundPosition: '0% 50%' },
+                            '50%': { backgroundPosition: '100% 50%' },
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(30px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        slideInLeft: {
+                            '0%': { opacity: '0', transform: 'translateX(-30px)' },
+                            '100%': { opacity: '1', transform: 'translateX(0)' },
+                        },
+                        slideInRight: {
+                            '0%': { opacity: '0', transform: 'translateX(30px)' },
+                            '100%': { opacity: '1', transform: 'translateX(0)' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        bounceSoft: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-5px)' },
+                        },
+                        shimmer: {
+                            '0%': { backgroundPosition: '-200% 0' },
+                            '100%': { backgroundPosition: '200% 0' },
+                        },
+                        morph: {
+                            '0%, 100%': { borderRadius: '60% 40% 30% 70% / 60% 30% 70% 40%' },
+                            '50%': { borderRadius: '30% 60% 70% 40% / 50% 60% 30% 60%' },
+                        },
+                        glow: {
+                            '0%': { boxShadow: '0 0 20px rgba(234, 118, 72, 0.3)' },
+                            '100%': { boxShadow: '0 0 40px rgba(234, 118, 72, 0.6)' },
+                        }
+                    },
+                    backgroundSize: {
+                        '300%': '300%',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Schema.org JSON-LD -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Estampify",
+        "url": "https://yannmsft.github.io/Estampify/",
+        "description": "Free online PDF watermark tool. Add custom watermarks to your PDFs 100% locally. Your documents never leave your computer.",
+        "applicationCategory": "UtilitiesApplication",
+        "operatingSystem": "Web Browser",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "author": {
+            "@type": "Person",
+            "name": "Yann",
+            "url": "https://github.com/YannMSFT"
+        },
+        "screenshot": "https://yannmsft.github.io/Estampify/logo.png",
+        "featureList": [
+            "Add text watermarks to PDF",
+            "Customize font size, color, opacity",
+            "Repeat watermark pattern",
+            "100% client-side processing",
+            "Multi-language support (EN, FR, ES)",
+            "No file upload required"
+        ],
+        "browserRequirements": "Chrome 90+, Firefox 88+, Safari 14+, Edge 90+",
+        "softwareVersion": "1.1.0",
+        "inLanguage": ["en", "fr", "es"]
+    }
+    </script>
+    
     <title>Estampify - Filigrane PDF</title>
     
-    <!-- T003: CSS Variables and Base Styles -->
     <style>
-        /* ========== CSS Variables ========== */
-        :root {
-            /* Colors */
-            --color-primary: #2563eb;
-            --color-primary-hover: #1d4ed8;
-            --color-primary-light: #dbeafe;
-            --color-success: #22c55e;
-            --color-error: #ef4444;
-            --color-error-light: #fef2f2;
-            --color-warning: #f59e0b;
-            --color-gray-50: #f9fafb;
-            --color-gray-100: #f3f4f6;
-            --color-gray-200: #e5e7eb;
-            --color-gray-300: #d1d5db;
-            --color-gray-400: #9ca3af;
-            --color-gray-500: #6b7280;
-            --color-gray-600: #4b5563;
-            --color-gray-700: #374151;
-            --color-gray-800: #1f2937;
-            --color-gray-900: #111827;
-            
-            /* Spacing */
-            --spacing-xs: 0.25rem;
-            --spacing-sm: 0.5rem;
-            --spacing-md: 1rem;
-            --spacing-lg: 1.5rem;
-            --spacing-xl: 2rem;
-            --spacing-2xl: 3rem;
-            
-            /* Typography */
-            --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            --font-size-xs: 0.75rem;
-            --font-size-sm: 0.875rem;
-            --font-size-base: 1rem;
-            --font-size-lg: 1.125rem;
-            --font-size-xl: 1.25rem;
-            --font-size-2xl: 1.5rem;
-            --font-size-3xl: 2rem;
-            
-            /* Border Radius */
-            --radius-sm: 0.25rem;
-            --radius-md: 0.5rem;
-            --radius-lg: 0.75rem;
-            --radius-xl: 1rem;
-            
-            /* Shadows */
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-            
-            /* Transitions */
-            --transition-fast: 150ms ease;
-            --transition-normal: 250ms ease;
-        }
-        
-        /* ========== Reset & Base ========== */
-        *, *::before, *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        
+        /* ========== Smooth Scroll ========== */
         html {
-            font-size: 16px;
-            -webkit-font-smoothing: antialiased;
+            scroll-behavior: smooth;
         }
         
-        body {
-            font-family: var(--font-family);
-            font-size: var(--font-size-base);
-            line-height: 1.6;
-            color: var(--color-gray-800);
-            background: var(--color-gray-50);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+        /* ========== Custom Scrollbar ========== */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #fef7f0;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #f0956b, #ea7648);
+            border-radius: 5px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #ea7648, #dc5c3d);
         }
         
-        /* ========== Layout ========== */
-        header {
-            background: white;
-            border-bottom: 1px solid var(--color-gray-200);
-            padding: var(--spacing-md) var(--spacing-xl);
-            box-shadow: var(--shadow-sm);
+        /* ========== Glassmorphism ========== */
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
         
-        .header-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-md);
+        .glass-dark {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
         
-        .logo {
-            font-size: var(--font-size-2xl);
-            font-weight: 700;
-            color: var(--color-primary);
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
+        /* ========== Gradient Text ========== */
+        .gradient-text {
+            background: linear-gradient(135deg, #ea7648, #dc5c3d, #f0956b);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradient 3s ease infinite;
         }
         
-        .logo-icon {
-            width: 40px;
-            height: 40px;
-            object-fit: contain;
+        /* ========== Background Blobs ========== */
+        .blob {
+            position: absolute;
+            filter: blur(80px);
+            opacity: 0.6;
+            z-index: -1;
         }
         
-        .tagline {
-            color: var(--color-gray-500);
-            font-size: var(--font-size-sm);
-        }
-        
-        main {
-            flex: 1;
-            max-width: 1200px;
-            width: 100%;
-            margin: 0 auto;
-            padding: var(--spacing-xl);
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: var(--spacing-xl);
-        }
-        
-        .left-panel, .right-panel {
-            display: flex;
-            flex-direction: column;
-            gap: var(--spacing-lg);
-        }
-        
-        footer {
-            background: white;
-            border-top: 1px solid var(--color-gray-200);
-            padding: var(--spacing-md) var(--spacing-xl);
-            text-align: center;
-            color: var(--color-gray-500);
-            font-size: var(--font-size-sm);
-        }
-        
-        footer a {
-            color: var(--color-primary);
-            text-decoration: none;
-        }
-        
-        footer a:hover {
-            text-decoration: underline;
-        }
-        
-        /* ========== Cards ========== */
-        .card {
-            background: white;
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-md);
-            padding: var(--spacing-lg);
-        }
-        
-        .card-title {
-            font-size: var(--font-size-lg);
-            font-weight: 600;
-            color: var(--color-gray-800);
-            margin-bottom: var(--spacing-md);
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-        }
-        
-        /* ========== Upload Zone ========== */
-        .upload-zone {
-            border: 2px dashed var(--color-gray-300);
-            border-radius: var(--radius-lg);
-            padding: var(--spacing-lg);
-            text-align: center;
-            cursor: pointer;
-            transition: all var(--transition-normal);
-            background: var(--color-gray-50);
-        }
-        
-        .upload-zone:hover {
-            border-color: var(--color-primary);
-            background: var(--color-primary-light);
-        }
-        
-        .upload-zone.drag-over {
-            border-color: var(--color-primary);
-            background: var(--color-primary-light);
-            transform: scale(1.02);
-        }
-        
-        .upload-zone.has-file {
-            border-color: var(--color-success);
-            background: #f0fdf4;
-        }
-        
-        .upload-icon {
-            font-size: 2rem;
-            margin-bottom: var(--spacing-sm);
-        }
-        
-        .upload-text {
-            color: var(--color-gray-600);
-            margin-bottom: var(--spacing-sm);
-        }
-        
-        .upload-hint {
-            color: var(--color-gray-400);
-            font-size: var(--font-size-sm);
-        }
-        
-        .file-info {
-            margin-top: var(--spacing-md);
-            padding: var(--spacing-md);
-            background: white;
-            border-radius: var(--radius-md);
-            display: none;
-        }
-        
-        .file-info.visible {
-            display: block;
-        }
-        
-        .file-name {
-            font-weight: 600;
-            color: var(--color-gray-800);
-            word-break: break-all;
-        }
-        
-        .file-details {
-            font-size: var(--font-size-sm);
-            color: var(--color-gray-500);
-            margin-top: var(--spacing-xs);
-        }
-        
-        /* ========== Config Panel ========== */
-        .config-group {
-            margin-bottom: var(--spacing-lg);
-        }
-        
-        .config-group:last-child {
-            margin-bottom: 0;
-        }
-        
-        .config-label {
-            display: block;
-            font-weight: 500;
-            color: var(--color-gray-700);
-            margin-bottom: var(--spacing-sm);
-            font-size: var(--font-size-sm);
-        }
-        
-        .config-row {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-md);
-        }
-        
-        .config-value {
-            min-width: 50px;
-            text-align: right;
-            font-size: var(--font-size-sm);
-            color: var(--color-gray-500);
-            font-variant-numeric: tabular-nums;
-        }
-        
-        input[type="text"],
-        input[type="number"] {
-            width: 100%;
-            padding: var(--spacing-sm) var(--spacing-md);
-            border: 1px solid var(--color-gray-300);
-            border-radius: var(--radius-md);
-            font-size: var(--font-size-base);
-            transition: border-color var(--transition-fast);
-        }
-        
-        input[type="text"]:focus,
-        input[type="number"]:focus {
-            outline: none;
-            border-color: var(--color-primary);
-            box-shadow: 0 0 0 3px var(--color-primary-light);
-        }
-        
+        /* ========== Custom Range Slider ========== */
         input[type="range"] {
-            flex: 1;
-            height: 6px;
             -webkit-appearance: none;
             appearance: none;
-            background: var(--color-gray-200);
-            border-radius: 3px;
-            cursor: pointer;
+            height: 8px;
+            border-radius: 9999px;
+            background: linear-gradient(to right, #fad9c1, #f0956b);
+            outline: none;
+            transition: all 0.3s ease;
         }
         
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
-            width: 18px;
-            height: 18px;
-            background: var(--color-primary);
+            appearance: none;
+            width: 22px;
+            height: 22px;
             border-radius: 50%;
+            background: linear-gradient(135deg, #ea7648, #dc5c3d);
             cursor: pointer;
-            transition: transform var(--transition-fast);
+            box-shadow: 0 4px 10px rgba(234, 118, 72, 0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         input[type="range"]::-webkit-slider-thumb:hover {
-            transform: scale(1.1);
+            transform: scale(1.15);
+            box-shadow: 0 6px 20px rgba(234, 118, 72, 0.5);
         }
         
         input[type="range"]::-moz-range-thumb {
-            width: 18px;
-            height: 18px;
-            background: var(--color-primary);
+            width: 22px;
+            height: 22px;
             border-radius: 50%;
+            background: linear-gradient(135deg, #ea7648, #dc5c3d);
+            cursor: pointer;
             border: none;
-            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(234, 118, 72, 0.4);
         }
         
-        input[type="color"] {
-            width: 50px;
-            height: 38px;
-            padding: 2px;
-            border: 1px solid var(--color-gray-300);
-            border-radius: var(--radius-md);
-            cursor: pointer;
-        }
-        
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-            cursor: pointer;
-        }
-        
-        .checkbox-group input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            accent-color: var(--color-primary);
-            cursor: pointer;
-        }
-        
-        .checkbox-label {
-            font-size: var(--font-size-sm);
-            color: var(--color-gray-700);
-            user-select: none;
-        }
-        
-        /* Template section */
-        .template-section {
-            padding: var(--spacing-md);
-            background: var(--color-gray-50);
-            border-radius: var(--radius-md);
-            margin-top: var(--spacing-sm);
-            display: none;
-        }
-        
-        .template-section.visible {
-            display: block;
-        }
-        
-        .template-preview {
-            font-size: var(--font-size-xs);
-            color: var(--color-gray-500);
-            margin-top: var(--spacing-sm);
-            font-style: italic;
-        }
-        
-        /* ========== Preview ========== */
-        .preview-container {
+        /* ========== Custom Checkbox ========== */
+        .custom-checkbox {
             position: relative;
-            background: var(--color-gray-100);
-            border-radius: var(--radius-lg);
-            min-height: 400px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-        
-        .preview-placeholder {
-            color: var(--color-gray-400);
-            text-align: center;
-            padding: var(--spacing-xl);
-        }
-        
-        .preview-placeholder-icon {
-            font-size: 4rem;
-            margin-bottom: var(--spacing-md);
-        }
-        
-        #preview-canvas {
-            max-width: 100%;
-            max-height: 500px;
-            box-shadow: var(--shadow-lg);
-            display: none;
-        }
-        
-        #preview-canvas.visible {
-            display: block;
-        }
-        
-        .watermark-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            pointer-events: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-        
-        /* ========== Actions & Progress ========== */
-        .actions {
-            display: flex;
-            flex-direction: column;
-            gap: var(--spacing-md);
-        }
-        
-        .btn {
-            padding: var(--spacing-md) var(--spacing-xl);
-            border: none;
-            border-radius: var(--radius-md);
-            font-size: var(--font-size-base);
-            font-weight: 600;
             cursor: pointer;
-            transition: all var(--transition-fast);
+        }
+        
+        .custom-checkbox input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
+        
+        .checkmark {
+            height: 24px;
+            width: 24px;
+            background: linear-gradient(135deg, #fff4cc, #fdeee0);
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: var(--spacing-sm);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid transparent;
         }
         
-        .btn-primary {
-            background: var(--color-primary);
+        .custom-checkbox:hover .checkmark {
+            border-color: #f0956b;
+            transform: scale(1.05);
+        }
+        
+        .custom-checkbox input:checked ~ .checkmark {
+            background: linear-gradient(135deg, #ea7648, #dc5c3d);
+            box-shadow: 0 4px 15px rgba(234, 118, 72, 0.4);
+        }
+        
+        .checkmark svg {
+            width: 14px;
+            height: 14px;
+            stroke: white;
+            stroke-width: 3;
+            fill: none;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.2s ease;
+        }
+        
+        .custom-checkbox input:checked ~ .checkmark svg {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        /* ========== Floating Elements ========== */
+        .floating-shape {
+            position: absolute;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        /* ========== Neumorphism Inputs ========== */
+        .neu-input {
+            background: linear-gradient(145deg, #ffffff, #f5f5f5);
+            border: none;
+            box-shadow: 
+                inset 2px 2px 5px rgba(0,0,0,0.05),
+                inset -2px -2px 5px rgba(255,255,255,0.8),
+                4px 4px 10px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .neu-input:focus {
+            box-shadow: 
+                inset 2px 2px 5px rgba(234, 118, 72, 0.1),
+                inset -2px -2px 5px rgba(255,255,255,0.9),
+                0 0 0 3px rgba(234, 118, 72, 0.2);
+        }
+        
+        /* ========== Animated Border ========== */
+        .animated-border {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .animated-border::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            padding: 2px;
+            background: linear-gradient(90deg, #ffd6e0, #d4f5d4, #d4edfc, #e8d4fc, #ffd6e0);
+            background-size: 300% 100%;
+            animation: gradient 4s linear infinite;
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .animated-border:hover::before,
+        .animated-border:focus-within::before {
+            opacity: 1;
+        }
+        
+        /* ========== Progress Bar Animation ========== */
+        .progress-shimmer {
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.4),
+                transparent
+            );
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+        
+        /* ========== File Info Card ========== */
+        .file-card {
+            background: linear-gradient(135deg, rgba(212, 245, 212, 0.5), rgba(212, 237, 252, 0.5));
+        }
+        
+        /* ========== Intersection Observer Animations ========== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* ========== Tooltip ========== */
+        .tooltip {
+            position: relative;
+        }
+        
+        .tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(-5px);
+            padding: 8px 12px;
+            background: linear-gradient(135deg, #374151, #1f2937);
             color: white;
+            font-size: 12px;
+            border-radius: 8px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
         }
         
-        .btn-primary:hover:not(:disabled) {
-            background: var(--color-primary-hover);
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-md);
+        .tooltip:hover::after {
+            opacity: 1;
+            transform: translateX(-50%) translateY(-10px);
         }
         
-        .btn-primary:disabled {
-            background: var(--color-gray-300);
-            color: var(--color-gray-500);
+        /* ========== Card Hover Effects ========== */
+        .card-3d {
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+        
+        .card-3d:hover {
+            transform: translateY(-5px) rotateX(2deg) rotateY(-2deg);
+        }
+        
+        /* ========== Color Picker ========== */
+        input[type="color"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 60px;
+            height: 44px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 4px;
+        }
+        
+        input[type="color"]::-webkit-color-swatch {
+            border: none;
+            border-radius: 8px;
+        }
+        
+        input[type="color"]:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* ========== Sparkle Effect ========== */
+        @keyframes sparkle {
+            0%, 100% { opacity: 0; transform: scale(0); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+        
+        .sparkle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: radial-gradient(circle, #fff 0%, transparent 70%);
+            border-radius: 50%;
+            animation: sparkle 2s infinite;
+        }
+        
+        /* ========== Step Number Badge ========== */
+        .step-badge {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #ea7648, #dc5c3d);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            box-shadow: 0 4px 15px rgba(234, 118, 72, 0.4);
+            flex-shrink: 0;
+        }
+        
+        /* ========== Upload Zone States ========== */
+        .upload-zone-base {
+            background: linear-gradient(145deg, rgba(255, 244, 204, 0.3), rgba(253, 238, 224, 0.3));
+            border: 3px dashed #fad9c1;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .upload-zone-base:hover {
+            border-color: #f0956b;
+            background: linear-gradient(145deg, rgba(255, 214, 224, 0.3), rgba(212, 237, 252, 0.3));
+            transform: scale(1.02);
+        }
+        
+        .upload-zone-base.drag-over {
+            border-color: #ea7648;
+            border-style: solid;
+            background: linear-gradient(145deg, rgba(234, 118, 72, 0.1), rgba(240, 149, 107, 0.1));
+            transform: scale(1.03);
+            box-shadow: 0 20px 40px rgba(234, 118, 72, 0.2);
+        }
+        
+        .upload-zone-base.has-file {
+            border-color: #22c55e;
+            border-style: solid;
+            background: linear-gradient(145deg, rgba(212, 245, 212, 0.5), rgba(187, 247, 208, 0.3));
+        }
+        
+        /* ========== Apply Button ========== */
+        .apply-btn {
+            background: linear-gradient(135deg, #ea7648, #dc5c3d, #f0956b);
+            background-size: 200% auto;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .apply-btn:hover:not(:disabled) {
+            background-position: right center;
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(234, 118, 72, 0.4);
+        }
+        
+        .apply-btn:disabled {
+            background: linear-gradient(135deg, #d1d5db, #9ca3af);
             cursor: not-allowed;
             transform: none;
+            box-shadow: none;
         }
         
-        .progress-container {
-            display: none;
+        /* ========== Preview Container ========== */
+        .preview-bg {
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(255, 214, 224, 0.4) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(212, 237, 252, 0.4) 0%, transparent 50%),
+                linear-gradient(145deg, #fef7f0, #ffffff);
         }
         
-        .progress-container.visible {
-            display: block;
+        /* ========== Error Toast ========== */
+        .error-toast {
+            background: linear-gradient(135deg, #fef2f2, #fee2e2);
+            border-left: 4px solid #ef4444;
+            animation: slideInRight 0.5s ease-out;
         }
         
-        .progress-bar {
-            height: 8px;
-            background: var(--color-gray-200);
-            border-radius: 4px;
-            overflow: hidden;
-        }
-        
-        .progress-fill {
-            height: 100%;
-            background: var(--color-primary);
-            border-radius: 4px;
-            transition: width var(--transition-fast);
-            width: 0%;
-        }
-        
-        .progress-text {
-            text-align: center;
-            font-size: var(--font-size-sm);
-            color: var(--color-gray-600);
-            margin-top: var(--spacing-sm);
-        }
-        
-        /* ========== Error Messages ========== */
-        .error-message {
-            background: var(--color-error-light);
-            border: 1px solid var(--color-error);
-            color: var(--color-error);
-            padding: var(--spacing-md);
-            border-radius: var(--radius-md);
-            font-size: var(--font-size-sm);
-            display: none;
-            align-items: center;
-            gap: var(--spacing-sm);
-        }
-        
-        .error-message.visible {
-            display: flex;
-        }
-        
-        .error-icon {
-            font-size: var(--font-size-lg);
-        }
-        
-        /* ========== Validation States ========== */
-        input.error {
-            border-color: var(--color-error);
-        }
-        
-        input.error:focus {
-            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
-        }
-        
-        .char-count {
-            font-size: var(--font-size-xs);
-            color: var(--color-gray-400);
-            text-align: right;
-            margin-top: var(--spacing-xs);
-        }
-        
-        .char-count.warning {
-            color: var(--color-warning);
-        }
-        
-        .char-count.error {
-            color: var(--color-error);
-        }
-        
-        /* ========== Browser Compatibility Warning ========== */
-        .browser-warning {
-            background: #fef3c7;
-            border: 1px solid #f59e0b;
-            color: #92400e;
-            padding: var(--spacing-lg);
-            margin: var(--spacing-lg);
-            border-radius: var(--radius-lg);
-            text-align: center;
-            display: none;
-        }
-        
-        .browser-warning.visible {
-            display: block;
-        }
-        
-        /* ========== Responsive ========== */
-        @media (max-width: 900px) {
-            main {
-                grid-template-columns: 1fr;
-                padding: var(--spacing-md);
-            }
-            
-            .header-content {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .upload-zone {
-                padding: var(--spacing-xl);
-            }
-            
-            .preview-container {
-                min-height: 300px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            :root {
-                font-size: 14px;
-            }
-            
-            .logo {
-                font-size: var(--font-size-xl);
-            }
-            
-            .upload-icon {
-                font-size: 2rem;
+        /* ========== Responsive Animations ========== */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
             }
         }
     </style>
 </head>
-<body>
+<body class="font-sans antialiased bg-gradient-to-br from-brand-50 via-white to-pastel-sky/30 min-h-screen overflow-x-hidden">
+    <!-- Animated Background Elements -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <!-- Gradient Blobs -->
+        <div class="blob w-[600px] h-[600px] bg-gradient-to-r from-pastel-pink/40 to-pastel-peach/40 rounded-full -top-48 -left-48 animate-float"></div>
+        <div class="blob w-[500px] h-[500px] bg-gradient-to-r from-pastel-sky/40 to-pastel-lavender/40 rounded-full top-1/3 -right-32 animate-float-delayed"></div>
+        <div class="blob w-[400px] h-[400px] bg-gradient-to-r from-pastel-mint/40 to-pastel-yellow/40 rounded-full bottom-0 left-1/4 animate-float-slow"></div>
+        
+        <!-- Floating Shapes -->
+        <div class="floating-shape w-6 h-6 bg-brand-300/30 rounded-full top-[20%] left-[10%] animate-bounce-soft"></div>
+        <div class="floating-shape w-4 h-4 bg-pastel-lavender rounded-full top-[60%] left-[5%] animate-float" style="animation-delay: 1s;"></div>
+        <div class="floating-shape w-8 h-8 bg-pastel-mint/50 rounded-lg top-[40%] right-[8%] animate-float-delayed rotate-45"></div>
+        <div class="floating-shape w-5 h-5 bg-pastel-pink/60 rounded-full bottom-[30%] right-[15%] animate-bounce-soft" style="animation-delay: 0.5s;"></div>
+        <div class="floating-shape w-3 h-3 bg-brand-400/40 rounded-full top-[15%] right-[25%] animate-float-slow"></div>
+    </div>
+
     <!-- Browser Compatibility Warning -->
-    <div id="browser-warning" class="browser-warning">
-        <strong data-i18n="browserWarningTitle">⚠️ Incompatible Browser</strong>
-        <p data-i18n="browserWarningText">Your browser does not support the required features. Please use a recent version of Chrome, Firefox, Safari or Edge.</p>
+    <div id="browser-warning" class="hidden fixed top-4 left-1/2 -translate-x-1/2 z-50 glass px-6 py-4 rounded-2xl shadow-xl border border-yellow-200 max-w-lg animate-slide-up">
+        <div class="flex items-start gap-3">
+            <span class="text-2xl">⚠️</span>
+            <div>
+                <strong class="text-yellow-800 font-semibold" data-i18n="browserWarningTitle">Incompatible Browser</strong>
+                <p class="text-yellow-700 text-sm mt-1" data-i18n="browserWarningText">Your browser does not support the required features. Please use a recent version of Chrome, Firefox, Safari or Edge.</p>
+            </div>
+        </div>
     </div>
 
     <!-- Header -->
-    <header>
-        <div class="header-content">
-            <div class="logo">
-                <img src="logo.png" alt="Estampify" class="logo-icon">
-                <span>Estampify</span>
+    <header class="relative z-10 py-6 px-4 sm:px-6 lg:px-8 animate-slide-up">
+        <div class="max-w-7xl mx-auto">
+            <div class="glass rounded-3xl px-8 py-6 shadow-xl border border-white/50">
+                <div class="flex flex-col items-center justify-center text-center gap-3">
+                    <!-- Logo -->
+                    <div class="flex items-center gap-4">
+                        <div class="relative">
+                            <div class="w-14 h-14 bg-gradient-to-br from-brand-400 to-brand-600 rounded-2xl flex items-center justify-center shadow-lg animate-morph">
+                                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                            </div>
+                            <div class="absolute -top-1 -right-1 w-4 h-4 bg-pastel-mint rounded-full animate-pulse-soft"></div>
+                        </div>
+                        <h1 class="text-4xl sm:text-5xl font-extrabold gradient-text tracking-tight">
+                            Estampify
+                        </h1>
+                    </div>
+                    <!-- Tagline -->
+                    <p class="text-gray-500 text-sm sm:text-base max-w-md" data-i18n="tagline">
+                        Add watermarks to your PDFs - 100% local, 100% private
+                    </p>
+                    <!-- Trust Badges -->
+                    <div class="flex flex-wrap items-center justify-center gap-4 mt-2">
+                        <div class="flex items-center gap-2 px-3 py-1.5 bg-pastel-mint/50 rounded-full text-xs font-medium text-green-700">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                            <span>100% Private</span>
+                        </div>
+                        <div class="flex items-center gap-2 px-3 py-1.5 bg-pastel-sky/50 rounded-full text-xs font-medium text-blue-700">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            <span>Fast & Free</span>
+                        </div>
+                        <div class="flex items-center gap-2 px-3 py-1.5 bg-pastel-lavender/50 rounded-full text-xs font-medium text-purple-700">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                            <span>No Upload</span>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <span class="tagline" data-i18n="tagline">Add watermarks to your PDFs - 100% local, 100% private</span>
         </div>
     </header>
 
-    <main>
-        <!-- Left Panel: Upload & Config -->
-        <div class="left-panel">
-            <!-- Error Display -->
-            <div id="error-message" class="error-message">
-                <span class="error-icon">⚠️</span>
-                <span id="error-text"></span>
+    <main class="relative z-10 flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Error Display -->
+        <div id="error-message" class="hidden error-toast fixed top-24 right-4 z-50 px-6 py-4 rounded-2xl shadow-xl max-w-md">
+            <div class="flex items-start gap-3">
+                <span class="text-xl">❌</span>
+                <span id="error-text" class="text-red-700 font-medium"></span>
             </div>
+        </div>
 
-            <!-- Upload Zone -->
-            <div class="card">
-                <h2 class="card-title" data-i18n="selectPdf">📄 1. Select a PDF</h2>
-                <div id="upload-zone" class="upload-zone">
-                    <div class="upload-icon">📁</div>
-                    <div class="upload-text" data-i18n="dragDropText">Drag and drop or click to browse</div>
-                    <div class="upload-hint" data-i18n="uploadHint">PDF only (max 50 MB, 500 pages)</div>
-                    <input type="file" id="file-input" accept=".pdf,application/pdf" hidden>
-                </div>
-                <div id="file-info" class="file-info">
-                    <div id="file-name" class="file-name"></div>
-                    <div id="file-details" class="file-details"></div>
-                </div>
-            </div>
-
-            <!-- Config Panel -->
-            <div class="card">
-                <h2 class="card-title" data-i18n="configureWatermark">✏️ 2. Configure the watermark</h2>
+        <div class="grid lg:grid-cols-2 gap-8">
+            <!-- Left Panel: Upload & Config -->
+            <div class="flex flex-col gap-6 animate-slide-in-left" style="animation-delay: 0.1s;">
                 
-                <!-- Template checkbox -->
-                <div class="config-group">
-                    <label class="checkbox-group">
-                        <input type="checkbox" id="use-template">
-                        <span class="checkbox-label" data-i18n="useTemplate">Use predefined template</span>
-                    </label>
+                <!-- Upload Zone Card -->
+                <div class="glass rounded-3xl p-6 shadow-xl border border-white/50 card-3d transition-all duration-500 hover:shadow-2xl">
+                    <div class="flex items-center gap-3 mb-5">
+                        <div class="step-badge">1</div>
+                        <h2 class="text-xl font-bold text-gray-800" data-i18n="selectPdf">Select a PDF</h2>
+                    </div>
                     
-                    <!-- Template name input -->
-                    <div id="template-section" class="template-section">
-                        <label class="config-label" for="template-name" data-i18n="recipientName">Recipient name</label>
-                        <input type="text" id="template-name" data-i18n-placeholder="templatePlaceholder" placeholder="E.g.: John Doe" maxlength="50">
-                        <div id="template-preview" class="template-preview"></div>
+                    <div id="upload-zone" class="upload-zone-base rounded-2xl p-8 text-center cursor-pointer group">
+                        <div class="space-y-4">
+                            <!-- Upload Icon -->
+                            <div class="relative mx-auto w-20 h-20">
+                                <div class="absolute inset-0 bg-gradient-to-br from-brand-200 to-brand-300 rounded-2xl rotate-6 group-hover:rotate-12 transition-transform duration-500"></div>
+                                <div class="absolute inset-0 bg-white rounded-2xl shadow-lg flex items-center justify-center group-hover:scale-105 transition-transform duration-500">
+                                    <svg class="w-10 h-10 text-brand-500 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <p class="text-gray-700 font-medium text-lg" data-i18n="dragDropText">Drag and drop or click to browse</p>
+                                <p class="text-gray-400 text-sm mt-1" data-i18n="uploadHint">PDF only (max 50 MB, 500 pages)</p>
+                            </div>
+                        </div>
+                        <input type="file" id="file-input" accept=".pdf,application/pdf" hidden>
+                    </div>
+                    
+                    <!-- File Info -->
+                    <div id="file-info" class="hidden file-card mt-4 rounded-2xl p-4">
+                        <div class="flex items-start gap-3">
+                            <div class="w-12 h-12 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl flex items-center justify-center flex-shrink-0">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <p id="file-name" class="font-semibold text-gray-800 truncate"></p>
+                                <p id="file-details" class="text-sm text-gray-500 mt-0.5"></p>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                
-                <!-- Text input -->
-                <div id="text-config" class="config-group">
-                    <label class="config-label" for="watermark-text" data-i18n="watermarkText">Watermark text</label>
-                    <input type="text" id="watermark-text" data-i18n-placeholder="textPlaceholder" placeholder="E.g.: CONFIDENTIAL" maxlength="150">
-                    <div id="char-count" class="char-count">0 / 150</div>
-                </div>
-                
-                <!-- Font size slider -->
-                <div class="config-group">
-                    <label class="config-label" data-i18n="fontSize">Font size</label>
-                    <div class="config-row">
-                        <input type="range" id="font-size" min="5" max="25" value="15">
-                        <span id="font-size-value" class="config-value">15</span>
+
+                <!-- Config Panel Card -->
+                <div class="glass rounded-3xl p-6 shadow-xl border border-white/50 card-3d transition-all duration-500 hover:shadow-2xl">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="step-badge">2</div>
+                        <h2 class="text-xl font-bold text-gray-800" data-i18n="configureWatermark">Configure the watermark</h2>
                     </div>
-                </div>
-                
-                <!-- Opacity slider -->
-                <div class="config-group">
-                    <label class="config-label" data-i18n="opacity">Opacity</label>
-                    <div class="config-row">
-                        <input type="range" id="opacity" min="10" max="100" value="20">
-                        <span id="opacity-value" class="config-value">20%</span>
+                    
+                    <div class="space-y-6">
+                        <!-- Template Checkbox -->
+                        <div class="space-y-3">
+                            <label class="custom-checkbox group">
+                                <input type="checkbox" id="use-template">
+                                <span class="checkmark">
+                                    <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                </span>
+                                <span class="ml-3 text-gray-700 font-medium group-hover:text-brand-600 transition-colors" data-i18n="useTemplate">Use predefined template</span>
+                            </label>
+                            
+                            <!-- Template Section -->
+                            <div id="template-section" class="hidden pl-9 space-y-2 animate-fade-in">
+                                <label class="text-sm font-medium text-gray-600" for="template-name" data-i18n="recipientName">Recipient name</label>
+                                <div class="animated-border rounded-xl">
+                                    <input type="text" id="template-name" 
+                                        class="neu-input w-full px-4 py-3 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none"
+                                        data-i18n-placeholder="templatePlaceholder" placeholder="E.g.: John Doe" maxlength="50">
+                                </div>
+                                <p id="template-preview" class="text-xs text-gray-500 italic"></p>
+                            </div>
+                        </div>
+                        
+                        <!-- Text Input -->
+                        <div id="text-config" class="space-y-2">
+                            <label class="text-sm font-medium text-gray-600" for="watermark-text" data-i18n="watermarkText">Watermark text</label>
+                            <div class="animated-border rounded-xl">
+                                <input type="text" id="watermark-text" 
+                                    class="neu-input w-full px-4 py-3 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none"
+                                    data-i18n-placeholder="textPlaceholder" placeholder="E.g.: CONFIDENTIAL" maxlength="150">
+                            </div>
+                            <p id="char-count" class="text-xs text-gray-400 text-right">0 / 150</p>
+                        </div>
+                        
+                        <!-- Font Size Slider -->
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <label class="text-sm font-medium text-gray-600" data-i18n="fontSize">Font size</label>
+                                <span id="font-size-value" class="text-sm font-semibold text-brand-600 bg-brand-100 px-3 py-1 rounded-full">15</span>
+                            </div>
+                            <input type="range" id="font-size" min="5" max="25" value="15" class="w-full">
+                        </div>
+                        
+                        <!-- Opacity Slider -->
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <label class="text-sm font-medium text-gray-600" data-i18n="opacity">Opacity</label>
+                                <span id="opacity-value" class="text-sm font-semibold text-brand-600 bg-brand-100 px-3 py-1 rounded-full">20%</span>
+                            </div>
+                            <input type="range" id="opacity" min="10" max="100" value="20" class="w-full">
+                        </div>
+                        
+                        <!-- Color Picker -->
+                        <div class="space-y-3">
+                            <label class="text-sm font-medium text-gray-600" data-i18n="color">Color</label>
+                            <div class="flex items-center gap-4">
+                                <input type="color" id="color" value="#000000">
+                                <span id="color-value" class="text-sm font-mono text-gray-600 bg-gray-100 px-3 py-2 rounded-lg">#000000</span>
+                                <!-- Quick Color Presets -->
+                                <div class="flex gap-2">
+                                    <button type="button" class="color-preset w-8 h-8 rounded-lg bg-black hover:scale-110 transition-transform shadow-md" data-color="#000000"></button>
+                                    <button type="button" class="color-preset w-8 h-8 rounded-lg bg-red-500 hover:scale-110 transition-transform shadow-md" data-color="#ef4444"></button>
+                                    <button type="button" class="color-preset w-8 h-8 rounded-lg bg-blue-500 hover:scale-110 transition-transform shadow-md" data-color="#3b82f6"></button>
+                                    <button type="button" class="color-preset w-8 h-8 rounded-lg bg-gray-500 hover:scale-110 transition-transform shadow-md" data-color="#6b7280"></button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Repeat Checkbox -->
+                        <label class="custom-checkbox group">
+                            <input type="checkbox" id="repeat-mode" checked>
+                            <span class="checkmark">
+                                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            </span>
+                            <span class="ml-3 text-gray-700 font-medium group-hover:text-brand-600 transition-colors" data-i18n="repeatWatermark">Repeat watermark across the page</span>
+                        </label>
                     </div>
-                </div>
-                
-                <!-- Color picker -->
-                <div class="config-group">
-                    <label class="config-label" data-i18n="color">Color</label>
-                    <div class="config-row">
-                        <input type="color" id="color" value="#000000">
-                        <span id="color-value" class="config-value">#000000</span>
-                    </div>
-                </div>
-                
-                <!-- Repeat checkbox -->
-                <div class="config-group">
-                    <label class="checkbox-group">
-                        <input type="checkbox" id="repeat-mode" checked>
-                        <span class="checkbox-label" data-i18n="repeatWatermark">Repeat watermark across the page</span>
-                    </label>
                 </div>
             </div>
 
-            <!-- Actions -->
-            <div class="card actions">
-                <button id="apply-btn" class="btn btn-primary" disabled>
-                    <span>🖨️</span>
-                    <span data-i18n="applyWatermark">Apply watermark</span>
-                </button>
-                
-                <!-- Progress -->
-                <div id="progress-container" class="progress-container">
-                    <div class="progress-bar">
-                        <div id="progress-fill" class="progress-fill"></div>
+            <!-- Right Panel: Preview -->
+            <div class="flex flex-col gap-6 animate-slide-in-right" style="animation-delay: 0.2s;">
+                <div class="glass rounded-3xl p-6 shadow-xl border border-white/50 card-3d transition-all duration-500 hover:shadow-2xl flex-1 flex flex-col">
+                    <div class="flex items-center gap-3 mb-5">
+                        <div class="step-badge">3</div>
+                        <h2 class="text-xl font-bold text-gray-800" data-i18n="preview">Preview</h2>
                     </div>
-                    <div id="progress-text" class="progress-text" data-i18n="processing">Processing...</div>
+                    
+                    <div class="preview-bg flex-1 rounded-2xl overflow-hidden relative min-h-[400px] lg:min-h-[500px] flex items-center justify-center p-4">
+                        <!-- Placeholder -->
+                        <div id="preview-placeholder" class="text-center space-y-4">
+                            <div class="relative mx-auto w-24 h-24">
+                                <div class="absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-300 rounded-2xl rotate-3 animate-pulse-soft"></div>
+                                <div class="absolute inset-0 bg-white rounded-2xl shadow-lg flex items-center justify-center">
+                                    <svg class="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <p class="text-gray-400 font-medium" data-i18n="previewPlaceholder">Preview will appear here</p>
+                        </div>
+                        
+                        <!-- Canvas -->
+                        <canvas id="preview-canvas" class="hidden max-w-full max-h-full rounded-lg shadow-2xl"></canvas>
+                        
+                        <!-- Watermark Overlay -->
+                        <div id="watermark-overlay" class="absolute inset-0 pointer-events-none overflow-hidden"></div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Right Panel: Preview -->
-        <div class="right-panel">
-            <!-- Preview -->
-            <div class="card" style="flex: 1;">
-                <h2 class="card-title" data-i18n="preview">👁️ 3. Preview</h2>
-                <div class="preview-container">
-                    <div id="preview-placeholder" class="preview-placeholder">
-                        <div class="preview-placeholder-icon">📄</div>
-                        <div data-i18n="previewPlaceholder">Preview will appear here</div>
+        <!-- Apply Button Section - Full Width at Bottom -->
+        <div class="mt-8 animate-slide-up" style="animation-delay: 0.3s;">
+            <div class="glass rounded-3xl p-6 shadow-xl border border-white/50">
+                <div class="max-w-2xl mx-auto">
+                    <button id="apply-btn" class="apply-btn w-full py-5 px-8 rounded-2xl text-white font-bold text-xl shadow-lg disabled:opacity-50 flex items-center justify-center gap-4 animate-glow" disabled>
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                        </svg>
+                        <span data-i18n="applyWatermark">Apply watermark</span>
+                    </button>
+                    
+                    <!-- Progress -->
+                    <div id="progress-container" class="hidden mt-4 space-y-3 animate-fade-in">
+                        <div class="h-4 bg-gray-200 rounded-full overflow-hidden">
+                            <div id="progress-fill" class="h-full bg-gradient-to-r from-brand-400 to-brand-600 rounded-full transition-all duration-300 relative" style="width: 0%">
+                                <div class="absolute inset-0 progress-shimmer"></div>
+                            </div>
+                        </div>
+                        <p id="progress-text" class="text-center text-sm text-gray-600 font-medium" data-i18n="processing">Processing...</p>
                     </div>
-                    <canvas id="preview-canvas"></canvas>
-                    <div id="watermark-overlay" class="watermark-overlay"></div>
                 </div>
             </div>
         </div>
     </main>
 
     <!-- Footer -->
-    <footer>
-        <p>
-            <strong>Estampify</strong> - <span data-i18n="footerLocal">100% local, your documents never leave your computer</span>
-            <br>
-            <a href="https://github.com/YannMSFT/Estampify" target="_blank" rel="noopener">GitHub</a> • 
-            <span data-i18n="createdBy">Created by</span> <a href="https://github.com/YannMSFT" target="_blank" rel="noopener">Yann</a>
-        </p>
+    <footer class="relative z-10 py-8 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="glass rounded-3xl px-8 py-6 shadow-xl border border-white/50">
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-gradient-to-br from-brand-400 to-brand-600 rounded-xl flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="font-bold text-gray-800">Estampify</p>
+                            <p class="text-sm text-gray-500" data-i18n="footerLocal">100% local, your documents never leave your computer</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <a href="https://github.com/YannMSFT/Estampify" target="_blank" rel="noopener" 
+                           class="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors group">
+                            <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
+                                <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="text-sm font-medium">GitHub</span>
+                        </a>
+                        <p class="text-sm text-gray-500">
+                            <span data-i18n="createdBy">Created by</span> 
+                            <a href="https://github.com/YannMSFT" target="_blank" rel="noopener" class="text-brand-600 hover:text-brand-700 font-medium hover:underline">Yann</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </footer>
 
     <!-- PDF-lib.js CDN -->
@@ -740,21 +883,33 @@
     
     <!-- Application JavaScript -->
     <script>
+        // ========== Intersection Observer for Scroll Animations ==========
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, observerOptions);
+        
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+        
         // ========== Internationalization (i18n) ==========
         const i18n = {
             translations: {
                 en: {
-                    // Browser warning
                     browserWarningTitle: '⚠️ Incompatible Browser',
                     browserWarningText: 'Your browser does not support the required features. Please use a recent version of Chrome, Firefox, Safari or Edge.',
-                    // Header
                     tagline: 'Add watermarks to your PDFs - 100% local, 100% private',
-                    // Upload section
-                    selectPdf: '📄 1. Select a PDF',
+                    selectPdf: '1. Select a PDF',
                     dragDropText: 'Drag and drop or click to browse',
                     uploadHint: 'PDF only (max 50 MB, 500 pages)',
-                    // Config section
-                    configureWatermark: '✏️ 2. Configure the watermark',
+                    configureWatermark: '2. Configure the watermark',
                     useTemplate: 'Use predefined template',
                     recipientName: 'Recipient name',
                     templatePlaceholder: 'E.g.: John Doe',
@@ -764,20 +919,16 @@
                     opacity: 'Opacity',
                     color: 'Color',
                     repeatWatermark: 'Repeat watermark across the page',
-                    // Preview section
-                    preview: '👁️ 3. Preview',
+                    preview: '3. Preview',
                     previewPlaceholder: 'Preview will appear here',
                     previewCaption: 'Watermark preview (A4 format)',
                     previewCaptionSimple: 'Watermark preview',
-                    // Actions
                     applyWatermark: 'Apply watermark',
                     processing: 'Processing...',
                     pageProgress: 'Page {current} of {total}',
                     complete: '✅ Done! Download in progress...',
-                    // Footer
                     footerLocal: '100% local, your documents never leave your computer',
                     createdBy: 'Created by',
-                    // Errors
                     errorFileTooLarge: 'File exceeds the 50 MB limit',
                     errorInvalidFormat: 'Unsupported format. Please select a PDF file.',
                     errorPasswordProtected: 'This PDF is password protected. Please use an unprotected PDF.',
@@ -785,25 +936,19 @@
                     errorTooManyPages: 'Document exceeds the 500 page limit ({count} pages detected)',
                     errorFileRead: 'Error reading file',
                     errorProcessing: 'Processing error: ',
-                    // Template text
                     templateText: 'Document exclusively intended for the use of {name}',
                     templateHint: 'Enter a name to see the preview',
-                    // File info
                     pages: 'pages',
                     page: 'page'
                 },
                 fr: {
-                    // Browser warning
                     browserWarningTitle: '⚠️ Navigateur non compatible',
                     browserWarningText: 'Votre navigateur ne supporte pas les fonctionnalités requises. Veuillez utiliser Chrome, Firefox, Safari ou Edge récent.',
-                    // Header
                     tagline: 'Ajoutez des filigranes à vos PDF - 100% local, 100% privé',
-                    // Upload section
-                    selectPdf: '📄 1. Sélectionnez un PDF',
+                    selectPdf: '1. Sélectionnez un PDF',
                     dragDropText: 'Glissez-déposez ou cliquez pour parcourir',
                     uploadHint: 'PDF uniquement (max 50 MB, 500 pages)',
-                    // Config section
-                    configureWatermark: '✏️ 2. Configurez le filigrane',
+                    configureWatermark: '2. Configurez le filigrane',
                     useTemplate: 'Utiliser le modèle prédéfini',
                     recipientName: 'Nom du destinataire',
                     templatePlaceholder: 'Ex: Jean Dupont',
@@ -813,20 +958,16 @@
                     opacity: 'Opacité',
                     color: 'Couleur',
                     repeatWatermark: 'Répéter le filigrane sur toute la page',
-                    // Preview section
-                    preview: '👁️ 3. Aperçu',
+                    preview: '3. Aperçu',
                     previewPlaceholder: 'L\'aperçu apparaîtra ici',
                     previewCaption: 'Aperçu du filigrane (format A4)',
                     previewCaptionSimple: 'Aperçu du filigrane',
-                    // Actions
                     applyWatermark: 'Appliquer le filigrane',
                     processing: 'Traitement en cours...',
                     pageProgress: 'Page {current} sur {total}',
                     complete: '✅ Terminé ! Téléchargement en cours...',
-                    // Footer
                     footerLocal: '100% local, vos documents ne quittent jamais votre ordinateur',
                     createdBy: 'Créé par',
-                    // Errors
                     errorFileTooLarge: 'Le fichier dépasse la limite de 50 MB',
                     errorInvalidFormat: 'Format non supporté. Veuillez sélectionner un fichier PDF.',
                     errorPasswordProtected: 'Ce PDF est protégé par mot de passe. Veuillez utiliser un PDF non protégé.',
@@ -834,25 +975,19 @@
                     errorTooManyPages: 'Le document dépasse la limite de 500 pages ({count} pages détectées)',
                     errorFileRead: 'Erreur lors de la lecture du fichier',
                     errorProcessing: 'Erreur lors du traitement: ',
-                    // Template text
                     templateText: 'Document exclusivement destiné à l\'usage de {name}',
                     templateHint: 'Entrez un nom pour voir l\'aperçu',
-                    // File info
                     pages: 'pages',
                     page: 'page'
                 },
                 es: {
-                    // Browser warning
                     browserWarningTitle: '⚠️ Navegador no compatible',
                     browserWarningText: 'Su navegador no soporta las funcionalidades requeridas. Por favor use una versión reciente de Chrome, Firefox, Safari o Edge.',
-                    // Header
                     tagline: 'Añade marcas de agua a tus PDF - 100% local, 100% privado',
-                    // Upload section
-                    selectPdf: '📄 1. Selecciona un PDF',
+                    selectPdf: '1. Selecciona un PDF',
                     dragDropText: 'Arrastra y suelta o haz clic para explorar',
                     uploadHint: 'Solo PDF (máx 50 MB, 500 páginas)',
-                    // Config section
-                    configureWatermark: '✏️ 2. Configura la marca de agua',
+                    configureWatermark: '2. Configura la marca de agua',
                     useTemplate: 'Usar plantilla predefinida',
                     recipientName: 'Nombre del destinatario',
                     templatePlaceholder: 'Ej: Juan García',
@@ -862,20 +997,16 @@
                     opacity: 'Opacidad',
                     color: 'Color',
                     repeatWatermark: 'Repetir marca de agua en toda la página',
-                    // Preview section
-                    preview: '👁️ 3. Vista previa',
+                    preview: '3. Vista previa',
                     previewPlaceholder: 'La vista previa aparecerá aquí',
                     previewCaption: 'Vista previa de la marca de agua (formato A4)',
                     previewCaptionSimple: 'Vista previa de la marca de agua',
-                    // Actions
                     applyWatermark: 'Aplicar marca de agua',
                     processing: 'Procesando...',
                     pageProgress: 'Página {current} de {total}',
                     complete: '✅ ¡Listo! Descarga en curso...',
-                    // Footer
                     footerLocal: '100% local, tus documentos nunca salen de tu ordenador',
                     createdBy: 'Creado por',
-                    // Errors
                     errorFileTooLarge: 'El archivo supera el límite de 50 MB',
                     errorInvalidFormat: 'Formato no soportado. Por favor seleccione un archivo PDF.',
                     errorPasswordProtected: 'Este PDF está protegido por contraseña. Por favor use un PDF sin protección.',
@@ -883,10 +1014,8 @@
                     errorTooManyPages: 'El documento supera el límite de 500 páginas ({count} páginas detectadas)',
                     errorFileRead: 'Error al leer el archivo',
                     errorProcessing: 'Error en el procesamiento: ',
-                    // Template text
                     templateText: 'Documento destinado exclusivamente al uso de {name}',
                     templateHint: 'Ingrese un nombre para ver la vista previa',
-                    // File info
                     pages: 'páginas',
                     page: 'página'
                 }
@@ -896,43 +1025,28 @@
             detectLanguage() {
                 const browserLang = navigator.language || navigator.userLanguage || 'en';
                 const langCode = browserLang.split('-')[0].toLowerCase();
-                
-                if (this.translations[langCode]) {
-                    this.currentLang = langCode;
-                } else {
-                    this.currentLang = 'en'; // Default to English
-                }
-                
-                // Update HTML lang attribute
+                this.currentLang = this.translations[langCode] ? langCode : 'en';
                 document.documentElement.lang = this.currentLang;
                 return this.currentLang;
             },
             
             t(key, replacements = {}) {
                 let text = this.translations[this.currentLang][key] || this.translations['en'][key] || key;
-                
-                // Replace placeholders like {name}, {current}, {total}
                 Object.keys(replacements).forEach(placeholder => {
                     text = text.replace(new RegExp('\\{' + placeholder + '\\}', 'g'), replacements[placeholder]);
                 });
-                
                 return text;
             },
             
             applyTranslations() {
-                // Update all elements with data-i18n attribute
                 document.querySelectorAll('[data-i18n]').forEach(el => {
                     const key = el.getAttribute('data-i18n');
                     el.textContent = this.t(key);
                 });
-                
-                // Update all placeholders with data-i18n-placeholder attribute
                 document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
                     const key = el.getAttribute('data-i18n-placeholder');
                     el.placeholder = this.t(key);
                 });
-                
-                // Update page title based on language
                 const titles = { en: 'Estampify - PDF Watermark', fr: 'Estampify - Filigrane PDF', es: 'Estampify - Marca de agua PDF' };
                 document.title = titles[this.currentLang] || titles.en;
             }
@@ -949,7 +1063,7 @@
             ];
             
             if (!required.every(Boolean)) {
-                document.getElementById('browser-warning').classList.add('visible');
+                document.getElementById('browser-warning').classList.remove('hidden');
                 document.querySelector('main').style.display = 'none';
             }
         })();
@@ -995,12 +1109,12 @@
             const errorEl = document.getElementById('error-message');
             const errorText = document.getElementById('error-text');
             errorText.textContent = message;
-            errorEl.classList.add('visible');
-            setTimeout(() => errorEl.classList.remove('visible'), 5000);
+            errorEl.classList.remove('hidden');
+            setTimeout(() => errorEl.classList.add('hidden'), 5000);
         }
 
         function hideError() {
-            document.getElementById('error-message').classList.remove('visible');
+            document.getElementById('error-message').classList.add('hidden');
         }
 
         // ========== File Validation ==========
@@ -1054,33 +1168,30 @@
             const ctx = canvas.getContext('2d');
             const placeholder = document.getElementById('preview-placeholder');
             
-            // Dimensions A4 par défaut (595 x 842 points)
             const pdfWidth = 595;
             const pdfHeight = 842;
             
-            const maxWidth = 500, maxHeight = 700;
+            const container = canvas.parentElement;
+            const maxWidth = Math.min(500, container.clientWidth - 32);
+            const maxHeight = 600;
             let scale = Math.min(maxWidth / pdfWidth, maxHeight / pdfHeight, 1);
             
             canvas.width = pdfWidth * scale;
             canvas.height = pdfHeight * scale;
             
-            // Fond blanc pour simuler la page
             ctx.fillStyle = 'white';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            // Bordure de la page
-            ctx.strokeStyle = '#d1d5db';
+            ctx.strokeStyle = '#e5e7eb';
             ctx.lineWidth = 1;
             ctx.strokeRect(0, 0, canvas.width, canvas.height);
             
-            // Simuler du contenu avec des lignes grises
-            ctx.strokeStyle = '#e5e7eb';
+            ctx.strokeStyle = '#f3f4f6';
             ctx.lineWidth = 1;
             const lineHeight = 14;
             const margin = 40;
             const lineWidth = canvas.width - margin * 2;
             
-            // Utiliser un seed fixe pour éviter le changement aléatoire
             const lines = [0.85, 0.72, 0.91, 0.68, 0.79, 0.88, 0.65, 0.94, 0.71, 0.82, 0.76, 0.89, 0.67, 0.93, 0.74, 0.86, 0.69, 0.91, 0.78, 0.84];
             let lineIndex = 0;
             
@@ -1093,16 +1204,9 @@
                 lineIndex++;
             }
             
-            // Texte d'info
-            ctx.fillStyle = '#9ca3af';
-            ctx.font = '12px sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText(i18n.t('previewCaption'), canvas.width / 2, canvas.height - 15);
+            placeholder.classList.add('hidden');
+            canvas.classList.remove('hidden');
             
-            placeholder.style.display = 'none';
-            canvas.classList.add('visible');
-            
-            // Stocker les dimensions par défaut pour l'overlay
             if (!AppState.document) {
                 AppState.defaultPageSize = { width: pdfWidth, height: pdfHeight };
             }
@@ -1122,23 +1226,22 @@
                 const firstPage = pages[0];
                 const { width, height } = firstPage.getSize();
                 
-                const maxWidth = 500, maxHeight = 700;
+                const container = canvas.parentElement;
+                const maxWidth = Math.min(500, container.clientWidth - 32);
+                const maxHeight = 600;
                 let scale = Math.min(maxWidth / width, maxHeight / height, 1);
                 
                 canvas.width = width * scale;
                 canvas.height = height * scale;
                 
-                // Fond blanc pour simuler la page
                 ctx.fillStyle = 'white';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
                 
-                // Bordure de la page
-                ctx.strokeStyle = '#d1d5db';
+                ctx.strokeStyle = '#e5e7eb';
                 ctx.lineWidth = 1;
                 ctx.strokeRect(0, 0, canvas.width, canvas.height);
                 
-                // Simuler du contenu avec des lignes grises
-                ctx.strokeStyle = '#e5e7eb';
+                ctx.strokeStyle = '#f3f4f6';
                 ctx.lineWidth = 1;
                 const lineHeight = 14;
                 const margin = 40;
@@ -1152,14 +1255,8 @@
                     ctx.stroke();
                 }
                 
-                // Texte d'info
-                ctx.fillStyle = '#9ca3af';
-                ctx.font = '12px sans-serif';
-                ctx.textAlign = 'center';
-                ctx.fillText(i18n.t('previewCaptionSimple'), canvas.width / 2, canvas.height - 15);
-                
-                placeholder.style.display = 'none';
-                canvas.classList.add('visible');
+                placeholder.classList.add('hidden');
+                canvas.classList.remove('hidden');
                 updateWatermarkOverlay();
             } catch (error) {
                 console.error('Preview error:', error);
@@ -1167,47 +1264,30 @@
         }
 
         // ========== Unified Watermark Grid Calculator ==========
-        // FR-023: Identique aperçu/rendu | FR-025: Espacement régulier | FR-026: Pas de chevauchement
-        
-        /**
-         * Calcule les positions exactes des filigranes pour une page donnée
-         * @param {string} text - Texte du filigrane
-         * @param {number} fontSize - Taille de police en points
-         * @param {number} pageWidth - Largeur de la page
-         * @param {number} pageHeight - Hauteur de la page
-         * @param {number} rotation - Rotation en degrés
-         * @returns {Array<{x: number, y: number}>} Liste des positions (origine: haut-gauche)
-         */
         function calculateWatermarkPositions(text, fontSize, pageWidth, pageHeight, rotation) {
-            // Calculer la taille du texte
-            const charWidth = fontSize * 0.52; // Largeur moyenne Helvetica
+            const charWidth = fontSize * 0.52;
             const textWidth = text.length * charWidth;
             const textHeight = fontSize;
             
-            // Calculer l'emprise du texte après rotation (bounding box)
             const radians = (rotation * Math.PI) / 180;
             const cos = Math.abs(Math.cos(radians));
             const sin = Math.abs(Math.sin(radians));
             const rotatedWidth = textWidth * cos + textHeight * sin;
             const rotatedHeight = textWidth * sin + textHeight * cos;
             
-            // Espacement = taille du texte rotaté + marge fixe (FR-025, FR-026)
             const marginX = fontSize * 2;
             const marginY = fontSize * 2;
             const spacingX = rotatedWidth + marginX;
             const spacingY = rotatedHeight + marginY;
             
-            // Calculer le nombre de colonnes et lignes nécessaires
             const cols = Math.ceil(pageWidth / spacingX) + 1;
             const rows = Math.ceil(pageHeight / spacingY) + 1;
             
-            // Centrer la grille sur la page
             const totalWidth = (cols - 1) * spacingX;
             const totalHeight = (rows - 1) * spacingY;
             const offsetX = (pageWidth - totalWidth) / 2;
             const offsetY = (pageHeight - totalHeight) / 2;
             
-            // Générer les positions
             const positions = [];
             for (let row = 0; row < rows; row++) {
                 for (let col = 0; col < cols; col++) {
@@ -1225,14 +1305,14 @@
             const overlay = document.getElementById('watermark-overlay');
             const canvas = document.getElementById('preview-canvas');
             
-            if (!canvas.classList.contains('visible')) { overlay.innerHTML = ''; return; }
+            if (canvas.classList.contains('hidden')) { overlay.innerHTML = ''; return; }
             
             const text = getEffectiveText();
             if (!text) { overlay.innerHTML = ''; return; }
             
             const config = AppState.config;
             const pdfPage = AppState.document?.pdfDoc?.getPages()[0];
-            const pdfWidth = pdfPage?.getSize().width || 595; // A4 default
+            const pdfWidth = pdfPage?.getSize().width || 595;
             const pdfHeight = pdfPage?.getSize().height || 842;
             const scale = canvas.width / pdfWidth;
             
@@ -1248,7 +1328,6 @@
             `;
             
             if (config.repeat) {
-                // Calculer sur les dimensions PDF, puis mettre à l'échelle
                 const { positions } = calculateWatermarkPositions(
                     text, config.fontSize, pdfWidth, pdfHeight, config.rotation
                 );
@@ -1323,15 +1402,11 @@
                 const { width, height } = page.getSize();
                 
                 if (config.repeat) {
-                    // FR-023: Utiliser EXACTEMENT le même calcul que l'aperçu
                     const { positions } = calculateWatermarkPositions(
                         text, config.fontSize, width, height, config.rotation
                     );
                     
                     positions.forEach(pos => {
-                        // Conversion coordonnées: aperçu (Y↓) vers PDF (Y↑)
-                        // Dans l'aperçu: pos.y = distance depuis le HAUT
-                        // Dans le PDF: y = distance depuis le BAS
                         const pdfY = height - pos.y;
                         
                         page.drawText(text, { 
@@ -1345,7 +1420,6 @@
                         });
                     });
                 } else {
-                    // Filigrane unique centré
                     const textWidth = font.widthOfTextAtSize(text, config.fontSize);
                     page.drawText(text, { 
                         x: width / 2, 
@@ -1393,7 +1467,7 @@
                 AppState.document = docInfo;
                 
                 document.getElementById('upload-zone').classList.add('has-file');
-                document.getElementById('file-info').classList.add('visible');
+                document.getElementById('file-info').classList.remove('hidden');
                 document.getElementById('file-name').textContent = docInfo.name;
                 const pageLabel = docInfo.pageCount > 1 ? i18n.t('pages') : i18n.t('page');
                 document.getElementById('file-details').textContent = (docInfo.size / (1024 * 1024)).toFixed(2) + ' MB • ' + docInfo.pageCount + ' ' + pageLabel;
@@ -1411,9 +1485,9 @@
             const text = document.getElementById('watermark-text').value;
             const charCount = document.getElementById('char-count');
             charCount.textContent = text.length + ' / 150';
-            charCount.classList.remove('warning', 'error');
-            if (text.length > 150) charCount.classList.add('error');
-            else if (text.length > 120) charCount.classList.add('warning');
+            charCount.classList.remove('text-yellow-500', 'text-red-500');
+            if (text.length > 150) charCount.classList.add('text-red-500');
+            else if (text.length > 120) charCount.classList.add('text-yellow-500');
         }
 
         function updateTemplatePreview() {
@@ -1440,7 +1514,7 @@
             try {
                 AppState.processing.status = 'processing';
                 applyBtn.disabled = true;
-                progressContainer.classList.add('visible');
+                progressContainer.classList.remove('hidden');
                 
                 const pdfBytes = await applyWatermark(AppState.document.pdfDoc, AppState.config, (current, total) => {
                     const percent = Math.round((current / total) * 100);
@@ -1453,7 +1527,7 @@
                 AppState.processing.status = 'complete';
                 
                 setTimeout(() => {
-                    progressContainer.classList.remove('visible');
+                    progressContainer.classList.add('hidden');
                     progressFill.style.width = '0%';
                     AppState.processing.status = 'idle';
                     updateApplyButton();
@@ -1461,7 +1535,7 @@
             } catch (error) {
                 showError(i18n.t('errorProcessing') + error.message);
                 AppState.processing.status = 'error';
-                progressContainer.classList.remove('visible');
+                progressContainer.classList.add('hidden');
                 updateApplyButton();
             }
         }
@@ -1490,9 +1564,26 @@
             document.getElementById('color').addEventListener('input', (e) => { document.getElementById('color-value').textContent = e.target.value; updateConfig({ color: e.target.value }); });
             document.getElementById('repeat-mode').addEventListener('change', (e) => { updateConfig({ repeat: e.target.checked }); });
             
+            // Color presets
+            document.querySelectorAll('.color-preset').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const color = btn.dataset.color;
+                    document.getElementById('color').value = color;
+                    document.getElementById('color-value').textContent = color;
+                    updateConfig({ color });
+                });
+            });
+            
             document.getElementById('use-template').addEventListener('change', (e) => {
-                document.getElementById('template-section').classList.toggle('visible', e.target.checked);
-                document.getElementById('text-config').style.display = e.target.checked ? 'none' : 'block';
+                const templateSection = document.getElementById('template-section');
+                const textConfig = document.getElementById('text-config');
+                if (e.target.checked) {
+                    templateSection.classList.remove('hidden');
+                    textConfig.style.display = 'none';
+                } else {
+                    templateSection.classList.add('hidden');
+                    textConfig.style.display = 'block';
+                }
                 updateConfig({ useTemplate: e.target.checked });
                 updateTemplatePreview();
             });
@@ -1502,7 +1593,6 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Initialize i18n
             i18n.detectLanguage();
             i18n.applyTranslations();
             
@@ -1516,7 +1606,6 @@
             document.getElementById('color-value').textContent = AppState.config.color;
             document.getElementById('repeat-mode').checked = AppState.config.repeat;
             
-            // Afficher l'aperçu par défaut immédiatement
             renderDefaultPreview();
         });
     </script>
@@ -1524,3 +1613,5 @@
     <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "eb0c2dc92a36461e90ac642f03ce123b"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
 </html>
+            border: none;
+            border-radius: var(--radius-md);
