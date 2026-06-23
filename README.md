@@ -28,7 +28,7 @@ Estampify est une application web 100% client-side qui permet d'ajouter des fili
 
 ### Option 1 : Ouvrir directement dans le navigateur
 
-1. Téléchargez le fichier `estampify-standalone.html`
+1. Téléchargez le fichier `index.html`
 2. Double-cliquez dessus pour l'ouvrir dans votre navigateur
 3. C'est tout ! L'application est prête à l'emploi
 
@@ -44,7 +44,7 @@ python -m http.server 8000
 # ou
 npx serve
 
-# Accéder à http://localhost:8000/estampify-standalone.html
+# Accéder à http://localhost:8000/index.html
 ```
 
 ## � Guide d'utilisation
@@ -99,7 +99,7 @@ npx serve
 
 ```
 Estampify/
-├── estampify-standalone.html    # Application complète (fichier unique)
+├── index.html    # Application complète (fichier unique)
 ├── README.md                   # Cette documentation
 ├── LICENSE                     # Licence MIT
 └── .github/
@@ -131,7 +131,7 @@ Le mode répétition utilise un algorithme intelligent :
 
 ## 🎨 Personnalisation
 
-Le fichier `estampify-standalone.html` peut être personnalisé :
+Le fichier `index.html` peut être personnalisé :
 
 - **Couleurs** : Modifiez les variables CSS dans la section `:root`
 - **Logo** : Remplacez l'URL du logo dans la section `<header>`
@@ -187,7 +187,7 @@ Les contributions sont les bienvenues ! N'hésitez pas à :
 ## 📦 Fichiers
 
 ```
-estampify-standalone.html    # Fichier unique autonome (tout le code est inclus)
+index.html    # Fichier unique autonome (tout le code est inclus)
 ```
 
 ## 🌐 Compatibilité
@@ -208,7 +208,7 @@ Fonctionne sur tous les navigateurs modernes :
 
 ## 📝 Utilisation
 
-1. **Ouvrir** le fichier `estampify-standalone.html`
+1. **Ouvrir** le fichier `index.html`
 2. **Sélectionner** votre fichier PDF
 3. **Configurer** le filigrane (texte, taille, rotation, etc.)
 4. **Prévisualiser** le rendu en temps réel
