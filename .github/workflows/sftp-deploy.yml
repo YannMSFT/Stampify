@@ -1,8 +1,11 @@
 name: Deploy via SFTP
 
-# Déploiement du site statique vers un serveur distant via SFTP.
-# Authentification SSH par mot de passe (secret SFTP_PASSWORD).
-# Ce workflow est indépendant des workflows Azure Static Web Apps existants.
+# Pipeline en deux temps :
+#   1. job "version" : calcule la prochaine version (SemVer x.y.z) à partir des
+#      messages de commit Conventional Commits, met à jour le pied de page de
+#      l'application, commit + tag automatiquement (aucune intervention humaine).
+#   2. job "deploy"  : déploie la version fraîchement taguée vers le serveur SFTP.
+# Indépendant des workflows Azure Static Web Apps existants.
 
 on:
   push:
@@ -10,25 +13,91 @@ on:
       - main
   workflow_dispatch:
 
-# Permissions minimales : on a seulement besoin de lire le code source.
+# Le job "version" doit pouvoir écrire (commit + tag) sur le dépôt.
 permissions:
-  contents: read
+  contents: write
 
-# Empêche deux déploiements simultanés ; annule le précédent encore en cours.
+# Sérialise les exécutions ; on n'annule PAS en cours de route pour éviter
+# d'interrompre un push de release à mi-chemin.
 concurrency:
   group: sftp-deploy
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
+  version:
+    runs-on: ubuntu-latest
+    # On ignore l'exécution déclenchée par le commit de release lui-même.
+    # (Les push faits avec GITHUB_TOKEN ne re-déclenchent pas de workflow ; ce
+    #  garde-fou couvre en plus le cas d'un push via PAT.)
+    if: ${{ !startsWith(github.event.head_commit.message, 'chore(release):') }}
+    outputs:
+      sha: ${{ steps.bump.outputs.sha }}
+      version: ${{ steps.semver.outputs.new_version }}
+    steps:
+      - name: Checkout du dépôt
+        uses: actions/checkout@v4
+        with:
+          # Historique complet requis pour analyser les commits depuis le dernier tag.
+          fetch-depth: 0
+
+      - name: Calcul de la prochaine version (Conventional Commits)
+        id: semver
+        # mathieudutour/github-tag-action v6.2 — dry_run : on calcule seulement,
+        # on créera le tag nous-mêmes sur le commit qui contient la bonne version.
+        # Règles : fix -> patch (z), feat -> minor (y), BREAKING CHANGE / "!" -> major (x).
+        uses: mathieudutour/github-tag-action@a22cf08638b34d5badda920f9daf6e72c477b07b # v6.2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          release_branches: main
+          default_bump: patch
+          tag_prefix: v
+          dry_run: true
+
+      - name: Mise à jour de la version + commit + tag
+        id: bump
+        env:
+          NEW_VERSION: ${{ steps.semver.outputs.new_version }}
+          NEW_TAG: ${{ steps.semver.outputs.new_tag }}
+        run: |
+          set -euo pipefail
+          if [ -z "${NEW_VERSION}" ]; then
+            echo "Aucune nouvelle version calculée ; conservation de l'état actuel."
+            echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "Nouvelle version : ${NEW_VERSION} (tag ${NEW_TAG})"
+          sed -i "s|<!--APP_VERSION_START-->.*<!--APP_VERSION_END-->|<!--APP_VERSION_START-->${NEW_VERSION}<!--APP_VERSION_END-->|" estampify-standalone.html
+          echo "Pied de page :"
+          grep -o "<!--APP_VERSION_START-->[^<]*<!--APP_VERSION_END-->" estampify-standalone.html
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          if git diff --quiet -- estampify-standalone.html; then
+            echo "Version déjà à jour dans le fichier ; pas de commit nécessaire."
+          else
+            git add estampify-standalone.html
+            git commit -m "chore(release): ${NEW_TAG} [skip ci]"
+            git push origin HEAD:main
+          fi
+
+          # Tag posé sur le commit qui contient effectivement la version affichée.
+          git tag "${NEW_TAG}"
+          git push origin "${NEW_TAG}"
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
   deploy:
+    needs: version
     runs-on: ubuntu-latest
     # L'Environment "production" permet de rattacher les secrets à un environnement
     # protégeable (required reviewers, restriction de branche, approbation manuelle).
     environment: production
 
     steps:
-      - name: Checkout du dépôt
+      - name: Checkout (commit avec la version à jour)
         uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.version.outputs.sha }}
 
       - name: Déploiement SFTP (auth par mot de passe)
         # wlixcc/SFTP-Deploy-Action v1.2.6 — pinné sur le SHA de commit pour la

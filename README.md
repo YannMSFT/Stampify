@@ -292,6 +292,28 @@ Les contributions sont les bienvenues ! N'hésitez pas à :
 - 💡 Proposer des nouvelles fonctionnalités
 - 🔧 Soumettre des pull requests
 
+## 🔢 Versioning automatique
+
+La version de l'application (format SemVer `x.y.z`) est affichée dans le **pied de page**
+et **incrémentée automatiquement**, sans intervention manuelle, à chaque push sur `main`.
+
+Le workflow [`.github/workflows/sftp-deploy.yml`](.github/workflows/sftp-deploy.yml)
+analyse les messages de commit selon la convention
+[Conventional Commits](https://www.conventionalcommits.org/) pour déterminer la nature
+du changement, met à jour le numéro dans le pied de page, crée le tag Git correspondant,
+puis déploie la version à jour :
+
+| Type de commit | Exemple | Incrément |
+| --- | --- | --- |
+| Correctif | `fix: corrige le calcul d'opacité` | `z` (patch) — `1.2.3 → 1.2.4` |
+| Fonctionnalité | `feat: ajoute le choix de la police` | `y` (minor) — `1.2.3 → 1.3.0` |
+| Changement majeur | `feat!: …` ou pied de commit `BREAKING CHANGE:` | `x` (major) — `1.2.3 → 2.0.0` |
+
+Le numéro de version dans le HTML est délimité par les marqueurs
+`<!--APP_VERSION_START-->…<!--APP_VERSION_END-->` ; ne pas les supprimer, c'est sur eux
+que s'appuie l'automatisation.
+
+
 ## 📝 Changelog
 
 ### Version 1.0.0 (Octobre 2025)
