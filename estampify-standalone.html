@@ -22,382 +22,700 @@
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="apple-touch-icon" href="logo.png">
     
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            50: '#fef7f0',
-                            100: '#fdeee0',
-                            200: '#fad9c1',
-                            300: '#f6bc97',
-                            400: '#f0956b',
-                            500: '#ea7648',
-                            600: '#dc5c3d',
-                            700: '#b74633',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
     <title>Estampify - Filigrane PDF</title>
-    
+
     <style>
-        body { font-family: system-ui, -apple-system, sans-serif; }
-        
-        .card {
-            background: white;
-            border: 1px solid #e5e7eb;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        :root {
+            --ink-950: #0A0F1E;
+            --ink-900: #111829;
+            --ink-850: #151E33;
+            --ink-800: #1B2740;
+            --line: #25324f;
+            --mist: #8893AE;
+            --mist-bright: #aeb8d4;
+            --paper: #EDF1FB;
+            --cobalt: #4D7CFF;
+            --cobalt-bright: #6f97ff;
+            --cobalt-dim: rgba(77, 124, 255, 0.14);
+            --seal: #F4B740;
+            --green: #34D399;
+            --red: #F87171;
+            --display: 'Space Grotesk', system-ui, sans-serif;
+            --body: 'Inter', system-ui, sans-serif;
+            --mono: 'Space Mono', ui-monospace, monospace;
         }
-        
-        input[type="range"] {
-            -webkit-appearance: none;
-            height: 8px;
-            border-radius: 9999px;
-            background: linear-gradient(to right, #fad9c1, #f0956b);
+
+        * { box-sizing: border-box; }
+        .hidden { display: none !important; }
+
+        html, body { height: 100%; }
+        body {
+            margin: 0;
+            font-family: var(--body);
+            color: var(--paper);
+            background: var(--ink-950);
+            background-image:
+                radial-gradient(900px 500px at 85% -10%, rgba(77, 124, 255, 0.10), transparent 60%),
+                radial-gradient(700px 500px at -5% 110%, rgba(244, 183, 64, 0.06), transparent 60%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            -webkit-font-smoothing: antialiased;
         }
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #ea7648;
-            cursor: pointer;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+
+        a { color: var(--cobalt-bright); }
+
+        /* ---------- App bar ---------- */
+        .appbar {
+            border-bottom: 1px solid var(--line);
+            background: rgba(10, 15, 30, 0.7);
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 30;
         }
-        input[type="range"]::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #ea7648;
-            cursor: pointer;
-            border: none;
-        }
-        
-        .custom-checkbox {
+        .appbar-inner {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 18px 24px;
             display: flex;
             align-items: center;
-            cursor: pointer;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
         }
-        .custom-checkbox input { display: none; }
-        .checkmark {
-            width: 22px;
-            height: 22px;
-            background: #fef7f0;
-            border: 2px solid #fad9c1;
-            border-radius: 6px;
+        .brand { display: flex; align-items: center; gap: 14px; }
+        /* Signature: the wordmark sits inside a rotated outlined stamp */
+        .stamp {
+            position: relative;
+            width: 46px; height: 46px;
+            flex-shrink: 0;
+            display: grid; place-items: center;
+            transform: rotate(-7deg);
+        }
+        .stamp::before {
+            content: "";
+            position: absolute; inset: 0;
+            border: 2px solid var(--seal);
+            border-radius: 11px;
+            opacity: 0.85;
+        }
+        .stamp::after {
+            content: "";
+            position: absolute; inset: 5px;
+            border: 1px dashed rgba(244, 183, 64, 0.5);
+            border-radius: 7px;
+        }
+        .stamp svg { width: 22px; height: 22px; color: var(--seal); position: relative; }
+        .brand-text h1 {
+            margin: 0;
+            font-family: var(--display);
+            font-weight: 700;
+            font-size: 24px;
+            letter-spacing: -0.02em;
+            color: var(--paper);
+        }
+        .brand-text .tag {
+            margin: 2px 0 0;
+            font-size: 12.5px;
+            color: var(--mist);
+            max-width: 42ch;
+        }
+        .trust { display: flex; gap: 8px; flex-wrap: wrap; }
+        .chip {
+            font-family: var(--mono);
+            font-size: 11px;
+            letter-spacing: 0.02em;
+            padding: 6px 11px;
+            border-radius: 999px;
+            border: 1px solid var(--line);
+            color: var(--mist-bright);
+            background: var(--ink-900);
+            white-space: nowrap;
+        }
+        .chip b { color: var(--seal); font-weight: 700; }
+
+        /* ---------- Layout ---------- */
+        main {
+            flex: 1;
+            max-width: 1180px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 34px 24px 56px;
+        }
+        .workspace {
+            display: grid;
+            grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+            gap: 22px;
+            align-items: start;
+        }
+        .col { display: flex; flex-direction: column; gap: 22px; }
+
+        .panel {
+            background: linear-gradient(180deg, var(--ink-900), var(--ink-850));
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 22px;
+        }
+
+        .step-head {
             display: flex;
             align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
+            gap: 11px;
+            margin-bottom: 18px;
         }
-        .custom-checkbox:hover .checkmark { border-color: #f0956b; }
-        .custom-checkbox input:checked ~ .checkmark {
-            background: #ea7648;
-            border-color: #ea7648;
+        .step-tick {
+            width: 8px; height: 26px;
+            border-radius: 999px;
+            background: linear-gradient(var(--cobalt), var(--cobalt-bright));
+            flex-shrink: 0;
         }
-        .checkmark svg {
-            width: 14px;
-            height: 14px;
-            stroke: white;
-            stroke-width: 3;
-            fill: none;
-            opacity: 0;
+        .step-head h2 {
+            margin: 0;
+            font-family: var(--display);
+            font-weight: 600;
+            font-size: 16px;
+            letter-spacing: -0.01em;
+            color: var(--paper);
         }
-        .custom-checkbox input:checked ~ .checkmark svg { opacity: 1; }
-        
+
+        /* ---------- Upload zone ---------- */
+        .upload-zone {
+            border: 1.5px dashed var(--line);
+            border-radius: 14px;
+            background:
+                repeating-linear-gradient(135deg, rgba(255,255,255,0.012) 0 12px, transparent 12px 24px),
+                var(--ink-950);
+            padding: 30px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color .2s, background .2s, transform .15s;
+        }
+        .upload-zone:hover { border-color: var(--cobalt); transform: translateY(-1px); }
+        .upload-zone.drag-over { border-color: var(--cobalt); border-style: solid; background: var(--cobalt-dim); }
+        .upload-zone.has-file { border-color: var(--green); border-style: solid; }
+        .upload-ico {
+            width: 52px; height: 52px;
+            margin: 0 auto 13px;
+            border-radius: 13px;
+            display: grid; place-items: center;
+            background: var(--cobalt-dim);
+            border: 1px solid rgba(77,124,255,0.3);
+            color: var(--cobalt-bright);
+        }
+        .upload-ico svg { width: 24px; height: 24px; }
+        .upload-zone .lead { margin: 0; font-weight: 500; font-size: 14.5px; color: var(--paper); }
+        .upload-zone .hint { margin: 6px 0 0; font-family: var(--mono); font-size: 11.5px; color: var(--mist); }
+
+        .file-info {
+            margin-top: 14px;
+            padding: 13px;
+            border-radius: 12px;
+            background: rgba(52, 211, 153, 0.08);
+            border: 1px solid rgba(52, 211, 153, 0.25);
+        }
+        .file-info .row { display: flex; align-items: center; gap: 12px; }
+        .file-badge {
+            width: 38px; height: 38px; flex-shrink: 0;
+            border-radius: 10px;
+            background: var(--green);
+            color: var(--ink-950);
+            display: grid; place-items: center;
+        }
+        .file-badge svg { width: 19px; height: 19px; }
+        .file-info .fname { margin: 0; font-weight: 600; font-size: 13.5px; color: var(--paper); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .file-info .fmeta { margin: 2px 0 0; font-family: var(--mono); font-size: 11.5px; color: var(--mist-bright); }
+
+        /* ---------- Controls ---------- */
+        .controls { display: flex; flex-direction: column; gap: 20px; }
+        .field-label {
+            display: block;
+            font-family: var(--mono);
+            font-size: 11px;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--mist);
+            margin-bottom: 8px;
+        }
         .input-field {
-            background: #fafafa;
-            border: 1px solid #e5e7eb;
-            transition: border-color 0.2s, box-shadow 0.2s;
+            width: 100%;
+            background: var(--ink-950);
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            padding: 11px 13px;
+            color: var(--paper);
+            font-family: var(--body);
+            font-size: 14px;
+            transition: border-color .2s, box-shadow .2s;
         }
+        .input-field::placeholder { color: #586079; }
         .input-field:focus {
-            border-color: #f0956b;
-            box-shadow: 0 0 0 3px rgba(240, 149, 107, 0.2);
+            outline: none;
+            border-color: var(--cobalt);
+            box-shadow: 0 0 0 3px var(--cobalt-dim);
+        }
+        .char-count { font-family: var(--mono); font-size: 11px; color: var(--mist); text-align: right; margin: 6px 0 0; }
+        .field-hint { font-family: var(--mono); font-size: 11.5px; color: var(--mist); margin: 6px 0 0; font-style: normal; }
+        .pl-sub { padding-left: 28px; margin-top: 12px; }
+
+        .slider-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 11px; }
+        .value-pill {
+            font-family: var(--mono);
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--cobalt-bright);
+            background: var(--cobalt-dim);
+            border: 1px solid rgba(77,124,255,0.3);
+            padding: 2px 9px;
+            border-radius: 999px;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none; appearance: none;
+            width: 100%; height: 6px;
+            border-radius: 999px;
+            background: linear-gradient(to right, var(--cobalt), var(--cobalt-bright));
             outline: none;
         }
-        
-        .upload-zone {
-            background: #fef7f0;
-            border: 2px dashed #fad9c1;
-            transition: all 0.2s;
-        }
-        .upload-zone:hover { border-color: #f0956b; background: #fff; }
-        .upload-zone.drag-over { border-color: #ea7648; border-style: solid; }
-        .upload-zone.has-file { border-color: #22c55e; border-style: solid; background: #f0fdf4; }
-        
-        .apply-btn {
-            background: linear-gradient(135deg, #ea7648, #dc5c3d);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .apply-btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(234, 118, 72, 0.3);
-        }
-        .apply-btn:disabled {
-            background: #d1d5db;
-            cursor: not-allowed;
-        }
-        
-        input[type="color"] {
-            -webkit-appearance: none;
-            width: 50px;
-            height: 40px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        input[type="color"]::-webkit-color-swatch-wrapper { padding: 3px; }
-        input[type="color"]::-webkit-color-swatch { border: none; border-radius: 5px; }
-        
-        .step-badge {
-            width: 28px;
-            height: 28px;
-            background: #ea7648;
-            color: white;
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none; appearance: none;
+            width: 19px; height: 19px;
             border-radius: 50%;
+            background: var(--paper);
+            border: 3px solid var(--cobalt);
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 19px; height: 19px;
+            border-radius: 50%;
+            background: var(--paper);
+            border: 3px solid var(--cobalt);
+            cursor: pointer;
+        }
+
+        /* color */
+        .color-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        input[type="color"] {
+            -webkit-appearance: none; appearance: none;
+            width: 48px; height: 40px;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            background: var(--ink-950);
+            cursor: pointer;
+            padding: 4px;
+        }
+        input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+        input[type="color"]::-webkit-color-swatch { border: none; border-radius: 6px; }
+        input[type="color"]::-moz-color-swatch { border: none; border-radius: 6px; }
+        .color-value {
+            font-family: var(--mono);
+            font-size: 12px;
+            color: var(--mist-bright);
+            background: var(--ink-950);
+            border: 1px solid var(--line);
+            padding: 5px 9px;
+            border-radius: 7px;
+        }
+        .presets { display: flex; gap: 7px; margin-left: auto; }
+        .color-preset {
+            width: 26px; height: 26px;
+            border-radius: 7px;
+            border: 1px solid var(--line);
+            cursor: pointer;
+            padding: 0;
+            transition: transform .15s;
+        }
+        .color-preset:hover { transform: scale(1.12); }
+
+        /* custom checkbox */
+        .custom-checkbox { display: flex; align-items: center; cursor: pointer; user-select: none; }
+        .custom-checkbox input { display: none; }
+        .checkmark {
+            width: 20px; height: 20px; flex-shrink: 0;
+            background: var(--ink-950);
+            border: 1.5px solid var(--line);
+            border-radius: 6px;
+            display: grid; place-items: center;
+            transition: all .2s;
+        }
+        .custom-checkbox:hover .checkmark { border-color: var(--cobalt); }
+        .custom-checkbox input:checked ~ .checkmark { background: var(--cobalt); border-color: var(--cobalt); }
+        .checkmark svg { width: 12px; height: 12px; stroke: var(--ink-950); stroke-width: 3.5; fill: none; opacity: 0; }
+        .custom-checkbox input:checked ~ .checkmark svg { opacity: 1; }
+        .cb-label { margin-left: 10px; font-size: 13.5px; color: var(--mist-bright); }
+
+        /* ---------- Preview desk (hero) ---------- */
+        .preview-panel { padding: 22px; min-height: 100%; display: flex; flex-direction: column; }
+        .preview-stage {
+            position: relative;
+            flex: 1;
+            border-radius: 14px;
+            border: 1px solid var(--line);
+            overflow: hidden;
+            min-height: 380px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 700;
-            font-size: 13px;
+            padding: 28px;
+            background: var(--ink-950);
         }
-        
-        .preview-bg { background: linear-gradient(145deg, #fef7f0, #fff); }
-        
+        /* Signature texture: the product demonstrating itself */
+        .preview-stage::before {
+            content: "ESTAMPIFY · ESTAMPIFY · ESTAMPIFY · ESTAMPIFY · ESTAMPIFY · ESTAMPIFY · ESTAMPIFY · ESTAMPIFY · ESTAMPIFY · ESTAMPIFY · ESTAMPIFY · ESTAMPIFY · ESTAMPIFY · ESTAMPIFY · ESTAMPIFY · ESTAMPIFY";
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 200%;
+            transform: translate(-50%, -50%) rotate(-30deg);
+            font-family: var(--display);
+            font-weight: 700;
+            font-size: 30px;
+            line-height: 2.4;
+            letter-spacing: 0.18em;
+            color: rgba(118, 142, 196, 0.045);
+            text-align: center;
+            word-spacing: 8px;
+            pointer-events: none;
+            white-space: normal;
+        }
+        @media (min-width: 1024px) { .preview-stage { min-height: 520px; } }
+        #preview-canvas { max-width: 100%; max-height: 100%; border-radius: 4px; box-shadow: 0 24px 60px -20px rgba(0,0,0,0.8); position: relative; z-index: 1; }
+        #watermark-overlay { z-index: 2; }
+        .preview-placeholder { text-align: center; position: relative; z-index: 1; }
+        .pp-ico {
+            width: 60px; height: 60px;
+            margin: 0 auto 14px;
+            border-radius: 15px;
+            display: grid; place-items: center;
+            background: var(--ink-900);
+            border: 1px solid var(--line);
+            color: #44516e;
+        }
+        .pp-ico svg { width: 28px; height: 28px; }
+        .preview-placeholder p { margin: 0; font-family: var(--mono); font-size: 12.5px; color: var(--mist); }
+
+        /* ---------- Apply / stamp ---------- */
+        .apply-wrap { margin-top: 22px; }
+        .apply-btn {
+            position: relative;
+            width: 100%;
+            border: none;
+            cursor: pointer;
+            padding: 17px 24px;
+            border-radius: 14px;
+            font-family: var(--display);
+            font-weight: 700;
+            font-size: 16px;
+            letter-spacing: -0.005em;
+            color: #ffffff;
+            background: linear-gradient(135deg, var(--cobalt), #3a5fe6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 11px;
+            overflow: hidden;
+            transition: transform .15s, box-shadow .2s, background .2s;
+            box-shadow: 0 12px 30px -12px rgba(77, 124, 255, 0.7);
+        }
+        .apply-btn svg { width: 21px; height: 21px; }
+        .apply-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 18px 40px -12px rgba(77, 124, 255, 0.8); }
+        .apply-btn:active:not(:disabled) { transform: translateY(1px) scale(0.995); }
+        .apply-btn:disabled {
+            background: var(--ink-800);
+            color: var(--mist);
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .progress-wrap { margin-top: 16px; }
+        .progress-track { height: 8px; border-radius: 999px; background: var(--ink-800); overflow: hidden; }
+        #progress-fill { height: 100%; border-radius: 999px; background: linear-gradient(to right, var(--cobalt), var(--seal)); transition: width .3s; }
+        .progress-text { font-family: var(--mono); font-size: 12px; color: var(--mist-bright); text-align: center; margin: 9px 0 0; }
+
+        /* ---------- Footer ---------- */
+        footer { border-top: 1px solid var(--line); padding: 20px 24px; }
+        .footer-inner {
+            max-width: 1180px; margin: 0 auto;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 16px; flex-wrap: wrap;
+        }
+        .footer-brand { display: flex; align-items: center; gap: 11px; }
+        .footer-brand .fb-name { margin: 0; font-family: var(--display); font-weight: 600; font-size: 14px; color: var(--paper); }
+        .footer-brand .fb-sub { margin: 1px 0 0; font-size: 12px; color: var(--mist); max-width: 48ch; }
+        .footer-actions { display: flex; align-items: center; gap: 14px; }
+        .gh-link {
+            display: flex; align-items: center; gap: 7px;
+            padding: 8px 13px;
+            border-radius: 9px;
+            border: 1px solid var(--line);
+            background: var(--ink-900);
+            color: var(--paper);
+            font-size: 12.5px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: border-color .2s;
+        }
+        .gh-link:hover { border-color: var(--cobalt); }
+        .gh-link svg { width: 16px; height: 16px; }
+        .footer-actions .made { font-size: 12px; color: var(--mist); }
+
+        /* ---------- Overlays ---------- */
+        #browser-warning {
+            position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
+            z-index: 50; max-width: 32rem;
+            padding: 16px 22px; border-radius: 14px;
+            background: var(--ink-850);
+            border: 1px solid rgba(244, 183, 64, 0.4);
+            box-shadow: 0 18px 50px rgba(0,0,0,0.5);
+        }
+        #browser-warning .bw-row { display: flex; gap: 12px; align-items: flex-start; }
+        #browser-warning strong { color: var(--seal); }
+        #browser-warning p { margin: 4px 0 0; color: var(--mist-bright); font-size: 13px; }
+
         .error-toast {
-            background: #fef2f2;
-            border-left: 4px solid #ef4444;
+            position: fixed; top: 84px; right: 18px; z-index: 50;
+            max-width: 22rem;
+            padding: 13px 17px; border-radius: 12px;
+            background: var(--ink-850);
+            border: 1px solid rgba(248, 113, 113, 0.4);
+            border-left: 4px solid var(--red);
+            box-shadow: 0 14px 40px rgba(0,0,0,0.5);
+        }
+        .error-toast .et-row { display: flex; gap: 9px; align-items: center; }
+        #error-text { color: var(--red); font-size: 13.5px; font-weight: 500; }
+
+        /* ---------- Responsive ---------- */
+        @media (max-width: 920px) {
+            .workspace { grid-template-columns: 1fr; }
+            .appbar-inner { padding: 16px 18px; }
+            main { padding: 24px 18px 44px; }
+            .brand-text .tag { display: none; }
+        }
+
+        /* ---------- A11y ---------- */
+        :focus-visible { outline: 2px solid var(--cobalt-bright); outline-offset: 2px; }
+        @media (prefers-reduced-motion: reduce) {
+            * { transition: none !important; animation: none !important; }
         }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen flex flex-col">
+<body>
     <!-- Browser Warning -->
-    <div id="browser-warning" class="hidden fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-yellow-50 border border-yellow-200 px-6 py-4 rounded-xl shadow-lg max-w-lg">
-        <div class="flex items-start gap-3">
-            <span class="text-xl">⚠️</span>
+    <div id="browser-warning" class="hidden">
+        <div class="bw-row">
+            <span style="font-size:20px">⚠️</span>
             <div>
-                <strong class="text-yellow-800" data-i18n="browserWarningTitle">Incompatible Browser</strong>
-                <p class="text-yellow-700 text-sm mt-1" data-i18n="browserWarningText">Please use Chrome, Firefox, Safari or Edge.</p>
+                <strong data-i18n="browserWarningTitle">Incompatible Browser</strong>
+                <p data-i18n="browserWarningText">Please use Chrome, Firefox, Safari or Edge.</p>
             </div>
         </div>
     </div>
 
-    <!-- Header -->
-    <header class="py-6 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-6xl mx-auto">
-            <div class="card rounded-2xl px-6 py-5 text-center">
-                <div class="flex items-center justify-center gap-3 mb-2">
-                    <div class="w-10 h-10 bg-gradient-to-br from-brand-400 to-brand-600 rounded-xl flex items-center justify-center">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                        </svg>
-                    </div>
-                    <h1 class="text-3xl font-bold text-brand-500">Estampify</h1>
+    <!-- App bar -->
+    <header class="appbar">
+        <div class="appbar-inner">
+            <div class="brand">
+                <span class="stamp" aria-hidden="true">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                </span>
+                <div class="brand-text">
+                    <h1>Estampify</h1>
+                    <p class="tag" data-i18n="tagline">Add watermarks to your PDFs - 100% local, 100% private</p>
                 </div>
-                <p class="text-gray-500 text-sm" data-i18n="tagline">Add watermarks to your PDFs - 100% local, 100% private</p>
-                <div class="flex flex-wrap items-center justify-center gap-3 mt-3">
-                    <span class="px-3 py-1 bg-green-50 text-green-700 text-xs font-medium rounded-full">🔒 100% Private</span>
-                    <span class="px-3 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded-full">⚡ Fast & Free</span>
-                    <span class="px-3 py-1 bg-purple-50 text-purple-700 text-xs font-medium rounded-full">💻 No Upload</span>
-                </div>
+            </div>
+            <div class="trust">
+                <span class="chip"><b>●</b> 100% Private</span>
+                <span class="chip"><b>●</b> Fast &amp; Free</span>
+                <span class="chip"><b>●</b> No Upload</span>
             </div>
         </div>
     </header>
 
-    <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 pb-8">
+    <main>
         <!-- Error -->
-        <div id="error-message" class="hidden error-toast fixed top-20 right-4 z-50 px-5 py-3 rounded-xl shadow-lg max-w-sm">
-            <div class="flex items-center gap-2">
+        <div id="error-message" class="error-toast hidden">
+            <div class="et-row">
                 <span>❌</span>
-                <span id="error-text" class="text-red-700 text-sm font-medium"></span>
+                <span id="error-text"></span>
             </div>
         </div>
 
-        <div class="grid lg:grid-cols-2 gap-6">
-            <!-- Left Panel -->
-            <div class="flex flex-col gap-5">
+        <div class="workspace">
+            <!-- Left: controls -->
+            <div class="col">
                 <!-- Upload -->
-                <div class="card rounded-2xl p-5">
-                    <div class="flex items-center gap-2 mb-4">
-                        <div class="step-badge">1</div>
-                        <h2 class="text-lg font-semibold text-gray-800" data-i18n="selectPdf">Select a PDF</h2>
+                <section class="panel">
+                    <div class="step-head">
+                        <span class="step-tick"></span>
+                        <h2 data-i18n="selectPdf">Select a PDF</h2>
                     </div>
-                    
-                    <div id="upload-zone" class="upload-zone rounded-xl p-6 text-center cursor-pointer">
-                        <div class="w-14 h-14 mx-auto mb-3 bg-white rounded-xl shadow flex items-center justify-center">
-                            <svg class="w-7 h-7 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+
+                    <div id="upload-zone" class="upload-zone">
+                        <div class="upload-ico">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
                             </svg>
                         </div>
-                        <p class="text-gray-700 font-medium" data-i18n="dragDropText">Drag and drop or click to browse</p>
-                        <p class="text-gray-400 text-sm mt-1" data-i18n="uploadHint">PDF only (max 50 MB, 500 pages)</p>
+                        <p class="lead" data-i18n="dragDropText">Drag and drop or click to browse</p>
+                        <p class="hint" data-i18n="uploadHint">PDF only (max 50 MB, 500 pages)</p>
                         <input type="file" id="file-input" accept=".pdf,application/pdf" hidden>
                     </div>
-                    
-                    <div id="file-info" class="hidden mt-3 p-3 bg-green-50 rounded-xl">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
-                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+
+                    <div id="file-info" class="file-info hidden">
+                        <div class="row">
+                            <div class="file-badge">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
                                 </svg>
                             </div>
-                            <div class="min-w-0 flex-1">
-                                <p id="file-name" class="font-medium text-gray-800 truncate text-sm"></p>
-                                <p id="file-details" class="text-xs text-gray-500"></p>
+                            <div style="min-width:0;flex:1">
+                                <p id="file-name" class="fname"></p>
+                                <p id="file-details" class="fmeta"></p>
                             </div>
                         </div>
                     </div>
-                </div>
+                </section>
 
                 <!-- Config -->
-                <div class="card rounded-2xl p-5">
-                    <div class="flex items-center gap-2 mb-5">
-                        <div class="step-badge">2</div>
-                        <h2 class="text-lg font-semibold text-gray-800" data-i18n="configureWatermark">Configure the watermark</h2>
+                <section class="panel">
+                    <div class="step-head">
+                        <span class="step-tick"></span>
+                        <h2 data-i18n="configureWatermark">Configure the watermark</h2>
                     </div>
-                    
-                    <div class="space-y-5">
+
+                    <div class="controls">
                         <!-- Template -->
                         <div>
                             <label class="custom-checkbox">
                                 <input type="checkbox" id="use-template">
                                 <span class="checkmark"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
-                                <span class="ml-2 text-gray-700 text-sm" data-i18n="useTemplate">Use predefined template</span>
+                                <span class="cb-label" data-i18n="useTemplate">Use predefined template</span>
                             </label>
-                            <div id="template-section" class="hidden mt-3 pl-8">
-                                <label class="text-xs font-medium text-gray-600 mb-1 block" data-i18n="recipientName">Recipient name</label>
-                                <input type="text" id="template-name" class="input-field w-full px-3 py-2 rounded-lg text-sm" placeholder="E.g.: John Doe" maxlength="50">
-                                <p id="template-preview" class="text-xs text-gray-500 mt-1 italic"></p>
+                            <div id="template-section" class="hidden pl-sub">
+                                <label class="field-label" data-i18n="recipientName">Recipient name</label>
+                                <input type="text" id="template-name" class="input-field" placeholder="E.g.: John Doe" maxlength="50">
+                                <p id="template-preview" class="field-hint"></p>
                             </div>
                         </div>
-                        
+
                         <!-- Text -->
                         <div id="text-config">
-                            <label class="text-xs font-medium text-gray-600 mb-1 block" data-i18n="watermarkText">Watermark text</label>
-                            <input type="text" id="watermark-text" class="input-field w-full px-3 py-2 rounded-lg text-sm" placeholder="E.g.: CONFIDENTIAL" maxlength="150">
-                            <p id="char-count" class="text-xs text-gray-400 text-right mt-1">0 / 150</p>
+                            <label class="field-label" data-i18n="watermarkText">Watermark text</label>
+                            <input type="text" id="watermark-text" class="input-field" placeholder="E.g.: CONFIDENTIAL" maxlength="150">
+                            <p id="char-count" class="char-count">0 / 150</p>
                         </div>
-                        
+
                         <!-- Font Size -->
                         <div>
-                            <div class="flex items-center justify-between mb-2">
-                                <label class="text-xs font-medium text-gray-600" data-i18n="fontSize">Font size</label>
-                                <span id="font-size-value" class="text-xs font-semibold text-brand-600 bg-brand-50 px-2 py-0.5 rounded-full">15</span>
+                            <div class="slider-row">
+                                <label class="field-label" style="margin:0" data-i18n="fontSize">Font size</label>
+                                <span id="font-size-value" class="value-pill">15</span>
                             </div>
-                            <input type="range" id="font-size" min="5" max="25" value="15" class="w-full">
+                            <input type="range" id="font-size" min="5" max="25" value="15">
                         </div>
-                        
+
                         <!-- Opacity -->
                         <div>
-                            <div class="flex items-center justify-between mb-2">
-                                <label class="text-xs font-medium text-gray-600" data-i18n="opacity">Opacity</label>
-                                <span id="opacity-value" class="text-xs font-semibold text-brand-600 bg-brand-50 px-2 py-0.5 rounded-full">20%</span>
+                            <div class="slider-row">
+                                <label class="field-label" style="margin:0" data-i18n="opacity">Opacity</label>
+                                <span id="opacity-value" class="value-pill">20%</span>
                             </div>
-                            <input type="range" id="opacity" min="10" max="100" value="20" class="w-full">
+                            <input type="range" id="opacity" min="10" max="100" value="20">
                         </div>
-                        
+
                         <!-- Color -->
                         <div>
-                            <label class="text-xs font-medium text-gray-600 mb-2 block" data-i18n="color">Color</label>
-                            <div class="flex items-center gap-3">
+                            <label class="field-label" data-i18n="color">Color</label>
+                            <div class="color-row">
                                 <input type="color" id="color" value="#000000">
-                                <span id="color-value" class="text-xs font-mono text-gray-600 bg-gray-100 px-2 py-1 rounded">#000000</span>
-                                <div class="flex gap-1">
-                                    <button type="button" class="color-preset w-6 h-6 rounded bg-black" data-color="#000000"></button>
-                                    <button type="button" class="color-preset w-6 h-6 rounded bg-red-500" data-color="#ef4444"></button>
-                                    <button type="button" class="color-preset w-6 h-6 rounded bg-blue-500" data-color="#3b82f6"></button>
-                                    <button type="button" class="color-preset w-6 h-6 rounded bg-gray-500" data-color="#6b7280"></button>
+                                <span id="color-value" class="color-value">#000000</span>
+                                <div class="presets">
+                                    <button type="button" class="color-preset" data-color="#000000" style="background:#0a0f1e"></button>
+                                    <button type="button" class="color-preset" data-color="#ef4444" style="background:#ef4444"></button>
+                                    <button type="button" class="color-preset" data-color="#3b82f6" style="background:#3b82f6"></button>
+                                    <button type="button" class="color-preset" data-color="#6b7280" style="background:#6b7280"></button>
                                 </div>
                             </div>
                         </div>
-                        
+
                         <!-- Repeat -->
                         <label class="custom-checkbox">
                             <input type="checkbox" id="repeat-mode" checked>
                             <span class="checkmark"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
-                            <span class="ml-2 text-gray-700 text-sm" data-i18n="repeatWatermark">Repeat watermark across the page</span>
+                            <span class="cb-label" data-i18n="repeatWatermark">Repeat watermark across the page</span>
                         </label>
                     </div>
-                </div>
+                </section>
             </div>
 
-            <!-- Right Panel: Preview -->
-            <div class="flex flex-col gap-5">
-                <div class="card rounded-2xl p-5 flex-1 flex flex-col">
-                    <div class="flex items-center gap-2 mb-4">
-                        <div class="step-badge">3</div>
-                        <h2 class="text-lg font-semibold text-gray-800" data-i18n="preview">Preview</h2>
+            <!-- Right: preview hero -->
+            <div class="col">
+                <section class="panel preview-panel">
+                    <div class="step-head">
+                        <span class="step-tick"></span>
+                        <h2 data-i18n="preview">Preview</h2>
                     </div>
-                    
-                    <div class="preview-bg flex-1 rounded-xl overflow-hidden relative min-h-[350px] lg:min-h-[450px] flex items-center justify-center p-3">
-                        <div id="preview-placeholder" class="text-center">
-                            <div class="w-16 h-16 mx-auto mb-3 bg-white rounded-xl shadow flex items-center justify-center">
-                                <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+
+                    <div class="preview-stage">
+                        <div id="preview-placeholder" class="preview-placeholder">
+                            <div class="pp-ico">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                 </svg>
                             </div>
-                            <p class="text-gray-400 text-sm" data-i18n="previewPlaceholder">Preview will appear here</p>
+                            <p data-i18n="previewPlaceholder">Preview will appear here</p>
                         </div>
-                        <canvas id="preview-canvas" class="hidden max-w-full max-h-full rounded shadow-lg"></canvas>
-                        <div id="watermark-overlay" class="absolute inset-0 pointer-events-none overflow-hidden"></div>
+                        <canvas id="preview-canvas" class="hidden"></canvas>
+                        <div id="watermark-overlay" class="absolute" style="position:absolute;inset:0;pointer-events:none;overflow:hidden"></div>
                     </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- Apply Button -->
-        <div class="mt-6">
-            <div class="card rounded-2xl p-5">
-                <div class="max-w-xl mx-auto">
-                    <button id="apply-btn" class="apply-btn w-full py-4 px-6 rounded-xl text-white font-bold text-lg flex items-center justify-center gap-3" disabled>
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
-                        </svg>
-                        <span data-i18n="applyWatermark">Apply watermark</span>
-                    </button>
-                    <div id="progress-container" class="hidden mt-4">
-                        <div class="h-3 bg-gray-200 rounded-full overflow-hidden">
-                            <div id="progress-fill" class="h-full bg-gradient-to-r from-brand-400 to-brand-600 rounded-full transition-all duration-300" style="width: 0%"></div>
+                    <!-- Apply -->
+                    <div class="apply-wrap">
+                        <button id="apply-btn" class="apply-btn" disabled>
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                            </svg>
+                            <span data-i18n="applyWatermark">Apply watermark</span>
+                        </button>
+                        <div id="progress-container" class="progress-wrap hidden">
+                            <div class="progress-track">
+                                <div id="progress-fill" style="width: 0%"></div>
+                            </div>
+                            <p id="progress-text" class="progress-text" data-i18n="processing">Processing...</p>
                         </div>
-                        <p id="progress-text" class="text-center text-sm text-gray-600 mt-2" data-i18n="processing">Processing...</p>
                     </div>
-                </div>
+                </section>
             </div>
         </div>
     </main>
 
     <!-- Footer -->
-    <footer class="py-6 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-6xl mx-auto">
-            <div class="card rounded-2xl px-6 py-4">
-                <div class="flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
-                    <div class="flex items-center gap-2">
-                        <div class="w-8 h-8 bg-gradient-to-br from-brand-400 to-brand-600 rounded-lg flex items-center justify-center">
-                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                            </svg>
-                        </div>
-                        <div>
-                            <p class="font-semibold text-gray-800 text-sm">Estampify</p>
-                            <p class="text-xs text-gray-500" data-i18n="footerLocal">100% local, your documents never leave your computer</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <a href="https://github.com/YannMSFT/Estampify" target="_blank" rel="noopener" class="flex items-center gap-1.5 px-3 py-1.5 bg-gray-900 text-white text-xs rounded-lg hover:bg-gray-800">
-                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd"></path></svg>
-                            GitHub
-                        </a>
-                        <p class="text-xs text-gray-500"><span data-i18n="createdBy">Created by</span> <a href="https://github.com/YannMSFT" target="_blank" class="text-brand-600 hover:underline">Yann</a></p>
-                    </div>
+    <footer>
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <span class="stamp" style="width:34px;height:34px" aria-hidden="true">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                </span>
+                <div>
+                    <p class="fb-name">Estampify</p>
+                    <p class="fb-sub" data-i18n="footerLocal">100% local, your documents never leave your computer</p>
                 </div>
+            </div>
+            <div class="footer-actions">
+                <a href="https://github.com/YannMSFT/Estampify" target="_blank" rel="noopener" class="gh-link">
+                    <svg fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd"></path></svg>
+                    GitHub
+                </a>
+                <p class="made"><span data-i18n="createdBy">Created by</span> <a href="https://github.com/YannMSFT" target="_blank">Yann</a></p>
             </div>
         </div>
     </footer>
