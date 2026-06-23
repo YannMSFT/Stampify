@@ -66,17 +66,17 @@ jobs:
             exit 0
           fi
           echo "Nouvelle version : ${NEW_VERSION} (tag ${NEW_TAG})"
-          sed -i "s|<!--APP_VERSION_START-->.*<!--APP_VERSION_END-->|<!--APP_VERSION_START-->${NEW_VERSION}<!--APP_VERSION_END-->|" estampify-standalone.html
+          sed -i "s|<!--APP_VERSION_START-->.*<!--APP_VERSION_END-->|<!--APP_VERSION_START-->${NEW_VERSION}<!--APP_VERSION_END-->|" index.html
           echo "Pied de page :"
-          grep -o "<!--APP_VERSION_START-->[^<]*<!--APP_VERSION_END-->" estampify-standalone.html
+          grep -o "<!--APP_VERSION_START-->[^<]*<!--APP_VERSION_END-->" index.html
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          if git diff --quiet -- estampify-standalone.html; then
+          if git diff --quiet -- index.html; then
             echo "Version déjà à jour dans le fichier ; pas de commit nécessaire."
           else
-            git add estampify-standalone.html
+            git add index.html
             git commit -m "chore(release): ${NEW_TAG} [skip ci]"
             git push origin HEAD:main
           fi

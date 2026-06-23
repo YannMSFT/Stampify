@@ -28,7 +28,7 @@ Estampify est une application web 100% client-side qui permet d'ajouter des fili
 
 ### Option 1 : Ouvrir directement dans le navigateur
 
-1. Téléchargez le fichier `estampify-standalone.html`
+1. Téléchargez le fichier `index.html`
 2. Double-cliquez dessus pour l'ouvrir dans votre navigateur
 3. C'est tout ! L'application est prête à l'emploi
 
@@ -44,7 +44,7 @@ python -m http.server 8000
 # ou
 npx serve
 
-# Accéder à http://localhost:8000/estampify-standalone.html
+# Accéder à http://localhost:8000/index.html
 ```
 
 ## ☁️ Déploiement sur Azure App Service
@@ -61,12 +61,12 @@ Estampify étant une application statique 100% client-side (un seul fichier HTML
 
 ### Préparer le contenu à déployer
 
-Azure App Service sert par défaut un fichier nommé `index.html`. Comme l'application s'appelle `estampify-standalone.html`, créez une copie (ou un dossier de publication dédié) :
+Azure App Service sert par défaut un fichier nommé `index.html`, qui est désormais le nom de l'application : aucune copie/renommage n'est nécessaire. Préparez simplement un dossier de publication avec la page et ses ressources :
 
 ```bash
-# Créer un dossier de publication contenant un index.html
+# Créer un dossier de publication
 mkdir -p publish
-cp estampify-standalone.html publish/index.html
+cp index.html publish/index.html
 # Inclure les ressources statiques utilisées par la page
 cp favicon.ico favicon-32.png logo.png robots.txt sitemap.xml publish/ 2>/dev/null || true
 ```
@@ -148,13 +148,13 @@ Vous pouvez aussi configurer cela depuis le **portail Azure** : *App Service →
 
 ### Définir le document par défaut
 
-Si vous conservez le nom `estampify-standalone.html` au lieu de `index.html`, indiquez à App Service le document par défaut :
+L'application s'appelle désormais `index.html`, qui est le document par défaut servi par App Service : aucune configuration supplémentaire n'est nécessaire. Si vous renommez la page, indiquez le document par défaut à App Service :
 
 ```bash
 az webapp config set \
   --name estampify-<votre-suffixe-unique> \
   --resource-group rg-estampify \
-  --generic-configurations '{"defaultDocuments": ["estampify-standalone.html"]}'
+  --generic-configurations '{"defaultDocuments": ["index.html"]}'
 ```
 
 ### Vérifier et nettoyer
@@ -221,7 +221,7 @@ L'application est ensuite accessible à l'adresse `https://estampify-<votre-suff
 
 ```
 Estampify/
-├── estampify-standalone.html    # Application complète (fichier unique)
+├── index.html    # Application complète (fichier unique)
 ├── README.md                   # Cette documentation
 ├── LICENSE                     # Licence MIT
 └── .github/
@@ -253,7 +253,7 @@ Le mode répétition utilise un algorithme intelligent :
 
 ## 🎨 Personnalisation
 
-Le fichier `estampify-standalone.html` peut être personnalisé :
+Le fichier `index.html` peut être personnalisé :
 
 - **Couleurs** : Modifiez les variables CSS dans la section `:root`
 - **Logo** : Remplacez l'URL du logo dans la section `<header>`
@@ -331,7 +331,7 @@ que s'appuie l'automatisation.
 ## 📦 Fichiers
 
 ```
-estampify-standalone.html    # Fichier unique autonome (tout le code est inclus)
+index.html    # Fichier unique autonome (tout le code est inclus)
 ```
 
 ## 🌐 Compatibilité
@@ -352,7 +352,7 @@ Fonctionne sur tous les navigateurs modernes :
 
 ## 📝 Utilisation
 
-1. **Ouvrir** le fichier `estampify-standalone.html`
+1. **Ouvrir** le fichier `index.html`
 2. **Sélectionner** votre fichier PDF
 3. **Configurer** le filigrane (texte, taille, rotation, etc.)
 4. **Prévisualiser** le rendu en temps réel

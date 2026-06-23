@@ -12,7 +12,7 @@
 
 ### Option 1: Utilisation directe (recommandée)
 
-1. **Télécharger** le fichier `estampify-standalone.html`
+1. **Télécharger** le fichier `index.html`
 2. **Double-cliquer** sur le fichier pour l'ouvrir dans votre navigateur
 3. L'application est prête à l'emploi !
 
@@ -30,7 +30,7 @@ python -m http.server 8000
 npx serve
 
 # Ouvrir dans le navigateur
-open http://localhost:8000/estampify-standalone.html
+open http://localhost:8000/index.html
 ```
 
 ## Workflow utilisateur
@@ -72,7 +72,7 @@ L'aperçu se met à jour **en temps réel** lors des modifications.
 ## Structure du code
 
 ```html
-estampify-standalone.html
+index.html
 ├── <head>
 │   └── <style>           # CSS (variables, layout, composants)
 ├── <body>
