@@ -1,0 +1,56 @@
+name: Deploy via SFTP
+
+# Déploiement du site statique vers un serveur distant via SFTP.
+# Authentification SSH par mot de passe (secret SFTP_PASSWORD).
+# Ce workflow est indépendant des workflows Azure Static Web Apps existants.
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+# Permissions minimales : on a seulement besoin de lire le code source.
+permissions:
+  contents: read
+
+# Empêche deux déploiements simultanés ; annule le précédent encore en cours.
+concurrency:
+  group: sftp-deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    # L'Environment "production" permet de rattacher les secrets à un environnement
+    # protégeable (required reviewers, restriction de branche, approbation manuelle).
+    environment: production
+
+    steps:
+      - name: Checkout du dépôt
+        uses: actions/checkout@v4
+
+      - name: Déploiement SFTP (auth par mot de passe)
+        # wlixcc/SFTP-Deploy-Action v1.2.6 — pinné sur le SHA de commit pour la
+        # sécurité de la chaîne d'approvisionnement (supply-chain), pas sur le tag.
+        uses: wlixcc/SFTP-Deploy-Action@a5ccb9c6211a94cc59404f0fdb2a9936a6dfee64 # v1.2.6
+        with:
+          server: ${{ secrets.SFTP_HOST }}
+          username: ${{ secrets.SFTP_USERNAME }}
+          # Auth par mot de passe : si défini, la clé SSH est ignorée par l'action.
+          password: ${{ secrets.SFTP_PASSWORD }}
+          port: ${{ secrets.SFTP_PORT }}
+          local_path: "./*"
+          remote_path: ${{ secrets.SFTP_TARGET_DIR }}
+          # Supprime les fichiers distants absents de la source (déploiement propre).
+          delete_remote_files: true
+          # Exclusions : fichiers/dossiers non servis par le site.
+          rsyncArgs: >-
+            --exclude=.git
+            --exclude=.gitignore
+            --exclude=.github
+            --exclude=specs
+            --exclude=.specify
+            --exclude=README.md
+            --exclude=LICENSE
+            --exclude=THIRD_PARTY_NOTICES.md
