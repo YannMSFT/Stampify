@@ -39,7 +39,7 @@ jobs:
           username: ${{ secrets.SFTP_USERNAME }}
           # Auth par mot de passe : si défini, la clé SSH est ignorée par l'action.
           password: ${{ secrets.SFTP_PASSWORD }}
-          port: ${{ secrets.SFTP_PORT }}
+          port: ${{ secrets.SFTP_PORT || '22' }}
           local_path: "./*"
           remote_path: ${{ secrets.SFTP_TARGET_DIR }}
           # Supprime les fichiers distants absents de la source (déploiement propre).
