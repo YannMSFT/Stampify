@@ -47,6 +47,128 @@ npx serve
 # Accéder à http://localhost:8000/index.html
 ```
 
+## ☁️ Déploiement sur Azure App Service
+
+Estampify étant une application statique 100% client-side (un seul fichier HTML), elle peut être hébergée sur **Azure App Service** sans aucun backend applicatif. App Service sert simplement le fichier statique.
+
+> 💡 **Astuce** : Pour une application purement statique, **Azure Static Web Apps** (déjà configuré dans ce dépôt via `.github/workflows/`) est souvent plus simple et gratuit. Utilisez App Service si vous avez besoin de fonctionnalités spécifiques (slots de déploiement, montée en charge, intégration réseau privé, etc.).
+
+### Prérequis
+
+- Un [compte Azure](https://azure.microsoft.com/free/) avec un abonnement actif
+- [Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli) installé (`az --version` pour vérifier)
+- Le code source cloné localement
+
+### Préparer le contenu à déployer
+
+Azure App Service sert par défaut un fichier nommé `index.html`, qui est désormais le nom de l'application : aucune copie/renommage n'est nécessaire. Préparez simplement un dossier de publication avec la page et ses ressources :
+
+```bash
+# Créer un dossier de publication
+mkdir -p publish
+cp index.html publish/index.html
+# Inclure les ressources statiques utilisées par la page
+cp favicon.ico favicon-32.png logo.png robots.txt sitemap.xml publish/ 2>/dev/null || true
+```
+
+### Option 1 : Déploiement rapide avec `az webapp up`
+
+La commande `az webapp up` crée le groupe de ressources, le plan App Service et l'application web, puis déploie le contenu en une seule étape.
+
+```bash
+# Se connecter à Azure
+az login
+
+# Se placer dans le dossier de publication
+cd publish
+
+# Créer et déployer l'application (Linux, plan gratuit F1)
+az webapp up \
+  --name estampify-<votre-suffixe-unique> \
+  --resource-group rg-estampify \
+  --location westeurope \
+  --sku F1 \
+  --os-type Linux \
+  --html
+```
+
+- `--name` doit être **globalement unique** (il devient `https://<name>.azurewebsites.net`).
+- `--html` indique à App Service qu'il s'agit d'un site HTML statique.
+- L'URL publique s'affiche à la fin du déploiement.
+
+### Option 2 : Déploiement par étapes (ZIP deploy)
+
+Pour davantage de contrôle, créez les ressources puis déployez une archive ZIP :
+
+```bash
+# 1. Groupe de ressources
+az group create --name rg-estampify --location westeurope
+
+# 2. Plan App Service (Linux, gratuit)
+az appservice plan create \
+  --name plan-estampify \
+  --resource-group rg-estampify \
+  --sku F1 \
+  --is-linux
+
+# 3. Application web (runtime statique via Node ou PHP, ici sans build)
+az webapp create \
+  --name estampify-<votre-suffixe-unique> \
+  --resource-group rg-estampify \
+  --plan plan-estampify \
+  --runtime "PHP:8.2"
+
+# 4. Créer l'archive et la déployer
+cd publish
+zip -r ../site.zip .
+cd ..
+az webapp deploy \
+  --name estampify-<votre-suffixe-unique> \
+  --resource-group rg-estampify \
+  --src-path site.zip \
+  --type zip
+```
+
+> Le runtime `PHP:8.2` (ou `NODE:20-lts`) fournit un serveur web prêt à servir des fichiers statiques. Aucun code serveur n'est exécuté pour Estampify.
+
+### Option 3 : Déploiement continu depuis GitHub
+
+Vous pouvez connecter App Service directement à ce dépôt pour un déploiement automatique à chaque `push` :
+
+```bash
+az webapp deployment source config \
+  --name estampify-<votre-suffixe-unique> \
+  --resource-group rg-estampify \
+  --repo-url https://github.com/YannMSFT/Estampify \
+  --branch main \
+  --manual-integration
+```
+
+Vous pouvez aussi configurer cela depuis le **portail Azure** : *App Service → Centre de déploiement → GitHub*.
+
+### Définir le document par défaut
+
+L'application s'appelle désormais `index.html`, qui est le document par défaut servi par App Service : aucune configuration supplémentaire n'est nécessaire. Si vous renommez la page, indiquez le document par défaut à App Service :
+
+```bash
+az webapp config set \
+  --name estampify-<votre-suffixe-unique> \
+  --resource-group rg-estampify \
+  --generic-configurations '{"defaultDocuments": ["index.html"]}'
+```
+
+### Vérifier et nettoyer
+
+```bash
+# Ouvrir l'application dans le navigateur
+az webapp browse --name estampify-<votre-suffixe-unique> --resource-group rg-estampify
+
+# Supprimer toutes les ressources lorsque vous avez terminé
+az group delete --name rg-estampify --yes --no-wait
+```
+
+L'application est ensuite accessible à l'adresse `https://estampify-<votre-suffixe-unique>.azurewebsites.net`.
+
 ## � Guide d'utilisation
 
 ### 1. Télécharger un PDF
@@ -169,6 +291,28 @@ Les contributions sont les bienvenues ! N'hésitez pas à :
 - 🐛 Signaler des bugs
 - 💡 Proposer des nouvelles fonctionnalités
 - 🔧 Soumettre des pull requests
+
+## 🔢 Versioning automatique
+
+La version de l'application (format SemVer `x.y.z`) est affichée dans le **pied de page**
+et **incrémentée automatiquement**, sans intervention manuelle, à chaque push sur `main`.
+
+Le workflow [`.github/workflows/sftp-deploy.yml`](.github/workflows/sftp-deploy.yml)
+analyse les messages de commit selon la convention
+[Conventional Commits](https://www.conventionalcommits.org/) pour déterminer la nature
+du changement, met à jour le numéro dans le pied de page, crée le tag Git correspondant,
+puis déploie la version à jour :
+
+| Type de commit | Exemple | Incrément |
+| --- | --- | --- |
+| Correctif | `fix: corrige le calcul d'opacité` | `z` (patch) — `1.2.3 → 1.2.4` |
+| Fonctionnalité | `feat: ajoute le choix de la police` | `y` (minor) — `1.2.3 → 1.3.0` |
+| Changement majeur | `feat!: …` ou pied de commit `BREAKING CHANGE:` | `x` (major) — `1.2.3 → 2.0.0` |
+
+Le numéro de version dans le HTML est délimité par les marqueurs
+`<!--APP_VERSION_START-->…<!--APP_VERSION_END-->` ; ne pas les supprimer, c'est sur eux
+que s'appuie l'automatisation.
+
 
 ## 📝 Changelog
 
