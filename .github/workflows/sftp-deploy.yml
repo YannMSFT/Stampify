@@ -1,7 +1,7 @@
 name: Deploy via SFTP
 
-# Déploiement du site statique vers un serveur distant via rsync over SSH (SFTP).
-# Authentification par clé SSH uniquement (aucun mot de passe en clair).
+# Déploiement du site statique vers un serveur distant via SFTP.
+# Authentification SSH par mot de passe (secret SFTP_PASSWORD).
 # Ce workflow est indépendant des workflows Azure Static Web Apps existants.
 
 on:
@@ -30,32 +30,27 @@ jobs:
       - name: Checkout du dépôt
         uses: actions/checkout@v4
 
-      - name: Déploiement SFTP (rsync over SSH)
-        # easingthemes/ssh-deploy v6.0.1 — pinné sur le SHA de commit pour la
+      - name: Déploiement SFTP (auth par mot de passe)
+        # wlixcc/SFTP-Deploy-Action v1.2.6 — pinné sur le SHA de commit pour la
         # sécurité de la chaîne d'approvisionnement (supply-chain), pas sur le tag.
-        uses: easingthemes/ssh-deploy@5d8aeab1a56041e269567e67a08ce00df324a617 # v6.0.1
+        uses: wlixcc/SFTP-Deploy-Action@a5ccb9c6211a94cc59404f0fdb2a9936a6dfee64 # v1.2.6
         with:
-          SSH_PRIVATE_KEY: ${{ secrets.SFTP_SSH_PRIVATE_KEY }}
-          REMOTE_HOST: ${{ secrets.SFTP_HOST }}
-          REMOTE_USER: ${{ secrets.SFTP_USERNAME }}
-          REMOTE_PORT: ${{ secrets.SFTP_PORT }}
-          TARGET: ${{ secrets.SFTP_TARGET_DIR }}
-          SOURCE: "./"
-          # Options rsync :
-          #   -r récursif, -l liens symboliques, -t timestamps, -z compression,
-          #   -v verbeux, -i itemize, --delete supprime côté serveur les fichiers
-          #   absents de la source (déploiement propre du site).
-          ARGS: "-rltzvi --delete"
-          # Fichiers/dossiers non servis par le site, exclus du transfert.
-          EXCLUDE: ".git, .gitignore, .github, specs, .specify, README.md, LICENSE, THIRD_PARTY_NOTICES.md, .ssh-deploy-state"
-          # Vérification de la clé hôte (host key) activée pour rsync.
-          # Voir README-sftp-deploy.md : la clé hôte est récupérée par ssh-keyscan
-          # (déclenché par SCRIPT_BEFORE) puis validée ici. Limite connue :
-          # l'action réinitialise known_hosts à chaque exécution (TOFU), ce n'est
-          # donc pas un pinning strict. Voir la doc pour le détail du risque.
-          SSH_CMD_ARGS: "-o StrictHostKeyChecking=yes"
-          # Force l'alimentation de known_hosts via ssh-keyscan et sert de test
-          # de connexion SSH avant le rsync.
-          SCRIPT_BEFORE: |
-            echo "Connexion SSH établie sur $(hostname)"
-          SCRIPT_BEFORE_REQUIRED: "true"
+          server: ${{ secrets.SFTP_HOST }}
+          username: ${{ secrets.SFTP_USERNAME }}
+          # Auth par mot de passe : si défini, la clé SSH est ignorée par l'action.
+          password: ${{ secrets.SFTP_PASSWORD }}
+          port: ${{ secrets.SFTP_PORT }}
+          local_path: "./*"
+          remote_path: ${{ secrets.SFTP_TARGET_DIR }}
+          # Supprime les fichiers distants absents de la source (déploiement propre).
+          delete_remote_files: true
+          # Exclusions : fichiers/dossiers non servis par le site.
+          rsyncArgs: >-
+            --exclude=.git
+            --exclude=.gitignore
+            --exclude=.github
+            --exclude=specs
+            --exclude=.specify
+            --exclude=README.md
+            --exclude=LICENSE
+            --exclude=THIRD_PARTY_NOTICES.md
